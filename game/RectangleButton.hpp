@@ -2,6 +2,7 @@
 #define RectangleButton_hpp
 
 #include <SFML/Graphics.hpp>
+#include <iostream>
 #include <chrono>
 #include "AdvancedMouse.hpp"
 #include "RectangleBounds.hpp"
@@ -19,8 +20,8 @@ class RectangleButton : public sf::RectangleShape
 private:
     
     std::chrono::steady_clock::time_point buttonTimePoint_;
-    int firstClickTimer_ = 100;
-    int betweenClickTimer_ = 50;
+    int firstClickTimer_ = 300;
+    int betweenClickTimer_ = 150;
     bool firstClickRegistered_ = false;
     
 public:

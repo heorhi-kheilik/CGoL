@@ -92,6 +92,7 @@ void RectangleButton::updateButtonCondition(AdvancedMouse ms, sf::RenderWindow &
                     }
                 }
                 break;
+                
             case ButtonType::ClickOnRelease: // clickOnRelease
                 if (click)
                 {
@@ -141,22 +142,54 @@ void RectangleButton::updateButtonCondition(AdvancedMouse ms, sf::RenderWindow &
                 {
                     if (isPointingAtButton(ms.getPosition(window)))
                     {
-                        if (ms.stage == PressStage::Released)
+                        switch (ms.stage)
                         {
-                            if (!firstClickRegistered_)
-                            {
-                                click = true;
-                            }
-                            isPressed = false;
-                        }
-                        else if (ms.stage == PressStage::NotPressed)
-                        {
-                            isPressed = false;
+                            case PressStage::JustPressed:
+                                break;
+                                
+                            case PressStage::Pressed:
+                                if (firstClickRegistered_)
+                                {
+                                    if (std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - buttonTimePoint_).count() > betweenClickTimer_)
+                                    {
+                                        buttonTimePoint_ = std::chrono::steady_clock::now();
+                                        click = true;
+                                    }
+                                    
+                                }
+                                else
+                                {
+                                    if (std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - buttonTimePoint_).count() > firstClickTimer_)
+                                    {
+                                        firstClickRegistered_ = true;
+                                        click = true;
+                                        buttonTimePoint_ = std::chrono::steady_clock::now();
+                                    }
+                                }
+                                break;
+                                
+                            case PressStage::Released:
+                                if (firstClickRegistered_)
+                                {
+                                    firstClickRegistered_ = false;
+                                }
+                                else
+                                {
+                                    click = true;
+                                }
+                                isPressed = false;
+                                break;
+                                
+                            case PressStage::NotPressed:
+                                firstClickRegistered_ = false;
+                                isPressed = false;
+                                break;
                         }
                     }
                     else
                     {
                         isPressed = false;
+                        firstClickRegistered_ = false;
                     }
                 }
                 else
@@ -168,6 +201,8 @@ void RectangleButton::updateButtonCondition(AdvancedMouse ms, sf::RenderWindow &
                             if (ms.stage == PressStage::JustPressed)
                             {
                                 isPressed = true;
+                                firstClickRegistered_ = false;
+                                buttonTimePoint_ = std::chrono::steady_clock::now();
                             }
                         }
                     }

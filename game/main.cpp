@@ -884,12 +884,12 @@ int main(int, char const**)
     ImprovedText currentSpeedText("1/" + doubleToString(textTurnTimer) + "s", courierNewFont, 30, sf::Color::Black, speedSwitchBackground.getGlobalBounds());
     
     RectangleButton minusSpeedButton(sf::Vector2f(50.f, 362.f), sf::Vector2f(86.f, 58.f), sf::Color::White);
-    minusSpeedButton.buttonType = ButtonType::ClickOnRelease;
+    minusSpeedButton.buttonType = ButtonType::ClickWithHold;
     
     ImprovedText minusSpeedButtonText("-", courierNewFont, 40, sf::Color::Black, minusSpeedButton.getGlobalBounds());
     
     RectangleButton plusSpeedButton(sf::Vector2f(138.f, 362.f), sf::Vector2f(86.f, 58.f), sf::Color::White);
-    plusSpeedButton.buttonType = ButtonType::ClickOnRelease;
+    plusSpeedButton.buttonType = ButtonType::ClickWithHold;
     
     ImprovedText plusSpeedButtonText("+", courierNewFont, 40, sf::Color::Black, plusSpeedButton.getGlobalBounds());
     
@@ -1265,8 +1265,6 @@ int main(int, char const**)
                         currentSpeedText.setText("1/" + doubleToString(textTurnTimer) + "s");
                     }
                 }
-                
-                std::cout << minusSpeedButton.interactable << std::endl;
                 
                 if (newGameButton.click)
                 {
