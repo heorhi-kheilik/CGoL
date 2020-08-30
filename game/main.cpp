@@ -1090,7 +1090,7 @@ int main(int, char const**)
                     if (nextTurnTimer < MAX_TIMER_VALUE)
                     {
                         nextTurnTimer += 10;
-                        textTurnTimer += 0.01;
+                        textTurnTimer = nextTurnTimer / 1000.0;
                         currentSpeedText.setText("1/" + doubleToString(textTurnTimer) + "s");
                     }
                 }
@@ -1100,7 +1100,7 @@ int main(int, char const**)
                     if (nextTurnTimer > MIN_TIMER_VALUE)
                     {
                         nextTurnTimer -= 10;
-                        textTurnTimer -= 0.01;
+                        textTurnTimer = nextTurnTimer / 1000.0;
                         currentSpeedText.setText("1/" + doubleToString(textTurnTimer) + "s");
                     }
                 }
@@ -1250,7 +1250,7 @@ int main(int, char const**)
                     {
 //                        timePoint = std::chrono::steady_clock::now();
                         nextTurnTimer += 10;
-                        textTurnTimer += 0.01;
+                        textTurnTimer = nextTurnTimer / 1000.0;
                         currentSpeedText.setText("1/" + doubleToString(textTurnTimer) + "s");
                     }
                 }
@@ -1261,7 +1261,7 @@ int main(int, char const**)
                     {
 //                        timePoint = std::chrono::steady_clock::now();
                         nextTurnTimer -= 10;
-                        textTurnTimer -= 0.01;
+                        textTurnTimer = nextTurnTimer / 1000.0;
                         currentSpeedText.setText("1/" + doubleToString(textTurnTimer) + "s");
                     }
                 }
