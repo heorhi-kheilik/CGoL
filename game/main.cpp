@@ -806,24 +806,25 @@ int main(int, char const**)
     
     AdvancedMouse mouse;
     
-    sf::Font courierNewFont;
-    if (!courierNewFont.loadFromFile(resourcePath() + "Courier New.ttf"))
+    sf::Font font;
+    if (!font.loadFromFile(resourcePath() + "SFProDisplay-Thin.ttf"))
     {
         std::cout << "hell no" << std::endl;
     }
+    
     // </MainInitialization>
     
     // <DrawChoiceInitialization>
     RectangleButton randomFieldFill(sf::Vector2f(320.f, 150.f), sf::Vector2f(640.f, 150.f), sf::Color::White);
     randomFieldFill.buttonType = ButtonType::ClickOnRelease;
     
-    ImprovedText randomFieldFillText("Use random field", courierNewFont, 80, sf::Color::Black, randomFieldFill.getGlobalBounds());
+    ImprovedText randomFieldFillText("Use random field", font, 80, sf::Color::Black, randomFieldFill.getGlobalBounds());
     
 
     RectangleButton drawField(sf::Vector2f(320.f, 420.f), sf::Vector2f(640.f, 150.f), sf::Color::White);
     drawField.buttonType = ButtonType::ClickOnRelease;
     
-    ImprovedText drawFieldText("Draw field", courierNewFont, 80, sf::Color::Black, drawField.getGlobalBounds());
+    ImprovedText drawFieldText("Draw field", font, 80, sf::Color::Black, drawField.getGlobalBounds());
     // </DrawChoiceInitialization>
     
     
@@ -838,13 +839,13 @@ int main(int, char const**)
     RectangleButton colorSwitcher(sf::Vector2f(50.f, 50.f), sf::Vector2f(174.f, 75.f), sf::Color::White);
     colorSwitcher.buttonType = ButtonType::ClickOnRelease;
     
-    ImprovedText colorSwitcherText("White", courierNewFont, 50, sf::Color::Black, colorSwitcher.getGlobalBounds());
+    ImprovedText colorSwitcherText("White", font, 50, sf::Color::Black, colorSwitcher.getGlobalBounds());
     
 
     RectangleButton gridSwitcher(sf::Vector2f(50.f, 175.f), sf::Vector2f(174.f, 75.f), sf::Color::White);
     gridSwitcher.buttonType = ButtonType::ClickOnRelease;
     
-    ImprovedText gridSwitcherText("Grid: OFF", courierNewFont, 40, sf::Color::Black, gridSwitcher.getGlobalBounds());
+    ImprovedText gridSwitcherText("Grid: OFF", font, 40, sf::Color::Black, gridSwitcher.getGlobalBounds());
     
     
     _fieldWidth--;
@@ -881,29 +882,29 @@ int main(int, char const**)
     speedSwitchBackground.setSize(sf::Vector2f(174.f, 60.f));
     speedSwitchBackground.setFillColor(sf::Color::White);
     
-    ImprovedText currentSpeedText("1/" + doubleToString(textTurnTimer) + "s", courierNewFont, 30, sf::Color::Black, speedSwitchBackground.getGlobalBounds());
+    ImprovedText currentSpeedText("1/" + doubleToString(textTurnTimer) + "s", font, 30, sf::Color::Black, speedSwitchBackground.getGlobalBounds());
     
     RectangleButton minusSpeedButton(sf::Vector2f(50.f, 362.f), sf::Vector2f(86.f, 58.f), sf::Color::White);
     minusSpeedButton.buttonType = ButtonType::ClickWithHold;
     
-    ImprovedText minusSpeedButtonText("-", courierNewFont, 40, sf::Color::Black, minusSpeedButton.getGlobalBounds());
+    ImprovedText minusSpeedButtonText("-", font, 40, sf::Color::Black, minusSpeedButton.getGlobalBounds());
     
     RectangleButton plusSpeedButton(sf::Vector2f(138.f, 362.f), sf::Vector2f(86.f, 58.f), sf::Color::White);
     plusSpeedButton.buttonType = ButtonType::ClickWithHold;
     
-    ImprovedText plusSpeedButtonText("+", courierNewFont, 40, sf::Color::Black, plusSpeedButton.getGlobalBounds());
+    ImprovedText plusSpeedButtonText("+", font, 40, sf::Color::Black, plusSpeedButton.getGlobalBounds());
     
     
     RectangleButton moveToGameStageButton(sf::Vector2f(50.f, 595.f), sf::Vector2f(174.f, 75.f), sf::Color::White);
     moveToGameStageButton.buttonType = ButtonType::ClickOnRelease;
     
-    ImprovedText moveToGameStageButtonText("Start", courierNewFont, 50, sf::Color::Black, moveToGameStageButton.getGlobalBounds());
+    ImprovedText moveToGameStageButtonText("Start", font, 50, sf::Color::Black, moveToGameStageButton.getGlobalBounds());
     
     
     RectangleButton eraseAllButton(sf::Vector2f(50.f, 470.f), sf::Vector2f(174.f, 75.f), sf::Color::White);
     eraseAllButton.buttonType = ButtonType::ClickOnRelease;
     
-    ImprovedText eraseAllButtonText("Erase all", courierNewFont, 40, sf::Color::Black, eraseAllButton.getGlobalBounds());
+    ImprovedText eraseAllButtonText("Erase all", font, 40, sf::Color::Black, eraseAllButton.getGlobalBounds());
     
     
     sf::Color drawColor = sf::Color::White;
@@ -937,13 +938,13 @@ int main(int, char const**)
     amountOfTurnsRect.setSize(sf::Vector2f(174.f, 75.f));
     amountOfTurnsRect.setFillColor(sf::Color::White);
     
-    ImprovedText amountOfTurnsText("0", courierNewFont, 50, sf::Color::Black, amountOfTurnsRect.getGlobalBounds());
+    ImprovedText amountOfTurnsText("0", font, 50, sf::Color::Black, amountOfTurnsRect.getGlobalBounds());
     
     
     RectangleButton newGameButton(sf::Vector2f(50.f, 470.f), sf::Vector2f(174.f, 75.f), sf::Color::White);
     newGameButton.buttonType = ButtonType::ClickOnRelease;
     
-    ImprovedText newGameButtonText("New Game", courierNewFont, 40, sf::Color::Black, newGameButton.getGlobalBounds());
+    ImprovedText newGameButtonText("New Game", font, 38, sf::Color::Black, newGameButton.getGlobalBounds());
     
     
     bool gameIsPaused = false;
@@ -952,7 +953,7 @@ int main(int, char const**)
     RectangleButton pauseButton(sf::Vector2f(50.f, 595.f), sf::Vector2f(174.f, 75.f), sf::Color::White);
     pauseButton.buttonType = ButtonType::ClickOnRelease;
     
-    ImprovedText pauseButtonText("Pause", courierNewFont, 50, sf::Color::Black, pauseButton.getGlobalBounds());
+    ImprovedText pauseButtonText("Pause", font, 50, sf::Color::Black, pauseButton.getGlobalBounds());
     
     
     bool aysMode = false;
@@ -962,7 +963,7 @@ int main(int, char const**)
     aysBackground.setSize(sf::Vector2f(640.f, 440.f));
     aysBackground.setFillColor(sf::Color::Black);
     
-    ImprovedText aysText("Are you sure?", courierNewFont, 90, sf::Color::White, sf::Rect<float>(320.f, 140.f, 640.f, 220.f));
+    ImprovedText aysText("Are you sure?", font, 90, sf::Color::White, sf::Rect<float>(320.f, 140.f, 640.f, 220.f));
     
     std::vector<sf::RectangleShape> aysBackgroundBorders(4);
     
@@ -985,12 +986,12 @@ int main(int, char const**)
     RectangleButton aysYes(sf::Vector2f(360.f, 400.f), sf::Vector2f(260.f, 140.f), sf::Color::White);
     aysYes.buttonType = ButtonType::ClickOnRelease;
     
-    ImprovedText aysYesText("Yes", courierNewFont, 80, sf::Color::Black, aysYes.getGlobalBounds());
+    ImprovedText aysYesText("Yes", font, 80, sf::Color::Black, aysYes.getGlobalBounds());
     
     RectangleButton aysNo(sf::Vector2f(660.f, 400.f), sf::Vector2f(260.f, 140.f), sf::Color::White);
     aysNo.buttonType = ButtonType::ClickOnRelease;
     
-    ImprovedText aysNoText("No", courierNewFont, 80, sf::Color::Black, aysNo.getGlobalBounds());
+    ImprovedText aysNoText("No", font, 80, sf::Color::Black, aysNo.getGlobalBounds());
     
     
     // </GameInitialization>
@@ -1024,23 +1025,23 @@ int main(int, char const**)
                 if (randomFieldFill.isPressed)
                 {
                     randomFieldFill.setFillColor(sf::Color::Blue);
-                    randomFieldFillText.setTextColor(sf::Color::White);
+                    randomFieldFillText.setFillColor(sf::Color::White);
                 }
                 else
                 {
                     randomFieldFill.setFillColor(sf::Color::White);
-                    randomFieldFillText.setTextColor(sf::Color::Black);
+                    randomFieldFillText.setFillColor(sf::Color::Black);
                 }
                 
                 if (drawField.isPressed)
                 {
                     drawField.setFillColor(sf::Color::Blue);
-                    drawFieldText.setTextColor(sf::Color::White);
+                    drawFieldText.setFillColor(sf::Color::White);
                 }
                 else
                 {
                     drawField.setFillColor(sf::Color::White);
-                    drawFieldText.setTextColor(sf::Color::Black);
+                    drawFieldText.setFillColor(sf::Color::Black);
                 }
                 break; // DrawChoice
                 
@@ -1139,67 +1140,67 @@ int main(int, char const**)
                 if (colorSwitcher.isPressed)
                 {
                     colorSwitcher.setFillColor(sf::Color::Blue);
-                    colorSwitcherText.setTextColor(sf::Color::White);
+                    colorSwitcherText.setFillColor(sf::Color::White);
                 }
                 else
                 {
                     colorSwitcher.setFillColor(sf::Color::White);
-                    colorSwitcherText.setTextColor(sf::Color::Black);
+                    colorSwitcherText.setFillColor(sf::Color::Black);
                 }
 
                 if (gridSwitcher.isPressed)
                 {
                     gridSwitcher.setFillColor(sf::Color::Blue);
-                    gridSwitcherText.setTextColor(sf::Color::White);
+                    gridSwitcherText.setFillColor(sf::Color::White);
                 }
                 else
                 {
                     gridSwitcher.setFillColor(sf::Color::White);
-                    gridSwitcherText.setTextColor(sf::Color::Black);
+                    gridSwitcherText.setFillColor(sf::Color::Black);
                 }
                 
                 if (minusSpeedButton.isPressed)
                 {
                     minusSpeedButton.setFillColor(sf::Color::Blue);
-                    minusSpeedButtonText.setTextColor(sf::Color::White);
+                    minusSpeedButtonText.setFillColor(sf::Color::White);
                 }
                 else
                 {
                     minusSpeedButton.setFillColor(sf::Color::White);
-                    minusSpeedButtonText.setTextColor(sf::Color::Black);
+                    minusSpeedButtonText.setFillColor(sf::Color::Black);
                 }
                 
                 if (plusSpeedButton.isPressed)
                 {
                     plusSpeedButton.setFillColor(sf::Color::Blue);
-                    plusSpeedButtonText.setTextColor(sf::Color::White);
+                    plusSpeedButtonText.setFillColor(sf::Color::White);
                 }
                 else
                 {
                     plusSpeedButton.setFillColor(sf::Color::White);
-                    plusSpeedButtonText.setTextColor(sf::Color::Black);
+                    plusSpeedButtonText.setFillColor(sf::Color::Black);
                 }
                 
                 if (eraseAllButton.isPressed)
                 {
                     eraseAllButton.setFillColor(sf::Color::Blue);
-                    eraseAllButtonText.setTextColor(sf::Color::White);
+                    eraseAllButtonText.setFillColor(sf::Color::White);
                 }
                 else
                 {
                     eraseAllButton.setFillColor(sf::Color::White);
-                    eraseAllButtonText.setTextColor(sf::Color::Black);
+                    eraseAllButtonText.setFillColor(sf::Color::Black);
                 }
                 
                 if (moveToGameStageButton.isPressed)
                 {
                     moveToGameStageButton.setFillColor(sf::Color::Blue);
-                    moveToGameStageButtonText.setTextColor(sf::Color::White);
+                    moveToGameStageButtonText.setFillColor(sf::Color::White);
                 }
                 else
                 {
                     moveToGameStageButton.setFillColor(sf::Color::White);
-                    moveToGameStageButtonText.setTextColor(sf::Color::Black);
+                    moveToGameStageButtonText.setFillColor(sf::Color::Black);
                 }
                 break; // DrawField
                 
@@ -1360,23 +1361,23 @@ int main(int, char const**)
                     if (aysYes.isPressed)
                     {
                         aysYes.setFillColor(sf::Color::Blue);
-                        aysYesText.setTextColor(sf::Color::White);
+                        aysYesText.setFillColor(sf::Color::White);
                     }
                     else
                     {
                         aysYes.setFillColor(sf::Color::White);
-                        aysYesText.setTextColor(sf::Color::Black);
+                        aysYesText.setFillColor(sf::Color::Black);
                     }
                     
                     if (aysNo.isPressed)
                     {
                         aysNo.setFillColor(sf::Color::Blue);
-                        aysNoText.setTextColor(sf::Color::White);
+                        aysNoText.setFillColor(sf::Color::White);
                     }
                     else
                     {
                         aysNo.setFillColor(sf::Color::White);
-                        aysNoText.setTextColor(sf::Color::Black);
+                        aysNoText.setFillColor(sf::Color::Black);
                     }
                 }
                 else
@@ -1384,56 +1385,56 @@ int main(int, char const**)
                     if (gridSwitcher.isPressed)
                     {
                         gridSwitcher.setFillColor(sf::Color::Blue);
-                        gridSwitcherText.setTextColor(sf::Color::White);
+                        gridSwitcherText.setFillColor(sf::Color::White);
                     }
                     else
                     {
                         gridSwitcher.setFillColor(sf::Color::White);
-                        gridSwitcherText.setTextColor(sf::Color::Black);
+                        gridSwitcherText.setFillColor(sf::Color::Black);
                     }
                     
                     if (minusSpeedButton.isPressed)
                     {
                         minusSpeedButton.setFillColor(sf::Color::Blue);
-                        minusSpeedButtonText.setTextColor(sf::Color::White);
+                        minusSpeedButtonText.setFillColor(sf::Color::White);
                     }
                     else
                     {
                         minusSpeedButton.setFillColor(sf::Color::White);
-                        minusSpeedButtonText.setTextColor(sf::Color::Black);
+                        minusSpeedButtonText.setFillColor(sf::Color::Black);
                     }
                     
                     if (plusSpeedButton.isPressed)
                     {
                         plusSpeedButton.setFillColor(sf::Color::Blue);
-                        plusSpeedButtonText.setTextColor(sf::Color::White);
+                        plusSpeedButtonText.setFillColor(sf::Color::White);
                     }
                     else
                     {
                         plusSpeedButton.setFillColor(sf::Color::White);
-                        plusSpeedButtonText.setTextColor(sf::Color::Black);
+                        plusSpeedButtonText.setFillColor(sf::Color::Black);
                     }
                     
                     if (newGameButton.isPressed)
                     {
                         newGameButton.setFillColor(sf::Color::Blue);
-                        newGameButtonText.setTextColor(sf::Color::White);
+                        newGameButtonText.setFillColor(sf::Color::White);
                     }
                     else
                     {
                         newGameButton.setFillColor(sf::Color::White);
-                        newGameButtonText.setTextColor(sf::Color::Black);
+                        newGameButtonText.setFillColor(sf::Color::Black);
                     }
                     
                     if (pauseButton.isPressed)
                     {
                         pauseButton.setFillColor(sf::Color::Blue);
-                        pauseButtonText.setTextColor(sf::Color::White);
+                        pauseButtonText.setFillColor(sf::Color::White);
                     }
                     else
                     {
                         pauseButton.setFillColor(sf::Color::White);
-                        pauseButtonText.setTextColor(sf::Color::Black);
+                        pauseButtonText.setFillColor(sf::Color::Black);
                     }
                 }
                 

@@ -7,25 +7,24 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		358EF018252A933E008EEDB1 /* SFProDisplay-Thin.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 358EF017252A933E008EEDB1 /* SFProDisplay-Thin.ttf */; };
+		358EF01A252A938A008EEDB1 /* icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 358EF019252A938A008EEDB1 /* icon.png */; };
 		3594478824F5BB7700F6DDCA /* ResourcePath.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3594478724F5BB7700F6DDCA /* ResourcePath.mm */; };
 		3594478B24F5BB7700F6DDCA /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3594478A24F5BB7700F6DDCA /* main.cpp */; };
-		3594479224F5BB7700F6DDCA /* sansation.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 3594479124F5BB7700F6DDCA /* sansation.ttf */; };
-		3594479424F5BB7700F6DDCA /* icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 3594479324F5BB7700F6DDCA /* icon.png */; };
 		3594479C24F5DE0400F6DDCA /* AdvancedMouse.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3594479A24F5DE0400F6DDCA /* AdvancedMouse.cpp */; };
 		3594479F24F5DE3200F6DDCA /* RectangleButton.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3594479D24F5DE3200F6DDCA /* RectangleButton.cpp */; };
 		359447A224F5DE6200F6DDCA /* RectangleBounds.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 359447A024F5DE6200F6DDCA /* RectangleBounds.cpp */; };
 		359447A524F5DE8E00F6DDCA /* ImprovedText.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 359447A324F5DE8E00F6DDCA /* ImprovedText.cpp */; };
-		359447A824F5E05A00F6DDCA /* Courier New.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 359447A724F5E05A00F6DDCA /* Courier New.ttf */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		358EF017252A933E008EEDB1 /* SFProDisplay-Thin.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "SFProDisplay-Thin.ttf"; sourceTree = "<group>"; };
+		358EF019252A938A008EEDB1 /* icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon.png; sourceTree = "<group>"; };
 		3594478224F5BB7700F6DDCA /* game.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = game.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		3594478624F5BB7700F6DDCA /* game-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = "game-Info.plist"; path = "../game-Info.plist"; sourceTree = "<group>"; };
 		3594478724F5BB7700F6DDCA /* ResourcePath.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = ResourcePath.mm; sourceTree = "<group>"; };
 		3594478924F5BB7700F6DDCA /* ResourcePath.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = ResourcePath.hpp; sourceTree = "<group>"; };
 		3594478A24F5BB7700F6DDCA /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
-		3594479124F5BB7700F6DDCA /* sansation.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = sansation.ttf; path = ../sansation.ttf; sourceTree = "<group>"; };
-		3594479324F5BB7700F6DDCA /* icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = icon.png; path = ../icon.png; sourceTree = "<group>"; };
 		3594479A24F5DE0400F6DDCA /* AdvancedMouse.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = AdvancedMouse.cpp; sourceTree = "<group>"; };
 		3594479B24F5DE0400F6DDCA /* AdvancedMouse.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = AdvancedMouse.hpp; sourceTree = "<group>"; };
 		3594479D24F5DE3200F6DDCA /* RectangleButton.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = RectangleButton.cpp; sourceTree = "<group>"; };
@@ -34,7 +33,6 @@
 		359447A124F5DE6200F6DDCA /* RectangleBounds.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = RectangleBounds.hpp; sourceTree = "<group>"; };
 		359447A324F5DE8E00F6DDCA /* ImprovedText.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ImprovedText.cpp; sourceTree = "<group>"; };
 		359447A424F5DE8E00F6DDCA /* ImprovedText.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = ImprovedText.hpp; sourceTree = "<group>"; };
-		359447A724F5E05A00F6DDCA /* Courier New.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "Courier New.ttf"; path = "../../../../Courier New.ttf"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -95,9 +93,8 @@
 		3594478C24F5BB7700F6DDCA /* Resources */ = {
 			isa = PBXGroup;
 			children = (
-				359447A724F5E05A00F6DDCA /* Courier New.ttf */,
-				3594479124F5BB7700F6DDCA /* sansation.ttf */,
-				3594479324F5BB7700F6DDCA /* icon.png */,
+				358EF019252A938A008EEDB1 /* icon.png */,
+				358EF017252A933E008EEDB1 /* SFProDisplay-Thin.ttf */,
 			);
 			path = Resources;
 			sourceTree = "<group>";
@@ -160,9 +157,8 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				3594479424F5BB7700F6DDCA /* icon.png in Resources */,
-				3594479224F5BB7700F6DDCA /* sansation.ttf in Resources */,
-				359447A824F5E05A00F6DDCA /* Courier New.ttf in Resources */,
+				358EF018252A933E008EEDB1 /* SFProDisplay-Thin.ttf in Resources */,
+				358EF01A252A938A008EEDB1 /* icon.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -1,50 +1,27 @@
 #ifndef ImprovedText_hpp
 #define ImprovedText_hpp
 
+
+
 #include <SFML/Graphics.hpp>
 
-#include <unordered_map>
-#include <unordered_set>
-#include <vector>
-
-#include <math.h>
-
-class ImprovedText : public sf::Drawable
+class ImprovedText : public sf::Text
 {
 private:
-    
-    std::string text_;
-    sf::Font font_;
-    unsigned int characterSize_;
-    sf::Color textColor_;
-    sf::Texture bitmap_;
-    
     sf::Rect<int> alignRectangle_;
     
-    sf::Vector2f currentPosition_;
-    
-    std::unordered_map<char, sf::Glyph> glyphMap_;
-    std::vector<sf::Sprite> spriteVector_;
-    
-    void draw(sf::RenderTarget &target, sf::RenderStates states) const;
-
+    sf::Vector2f calculateStartPosition();
+    sf::Vector2f calculateStartPosition(sf::Rect<int> alignRectangle);
+    sf::Vector2f calculateStartPosition(sf::Rect<float> alignRectangle);
     
 public:
-    void calculateStartPosition();
+    void setText(std::string text);
+    void setAlignRectangle(sf::Rect<int> alignRectangle);
+    void setAlignRectangle(sf::Rect<float> alignRectangle);
     
-    void resetText();
-    
-    ImprovedText(std::string str, sf::Font fnt, unsigned int sz, sf::Color clr, sf::Rect<float> alignRect);
-    
-    ImprovedText(std::string str, sf::Font fnt, unsigned int sz, sf::Color clr, sf::Rect<int> alignRect);
-    
-    void setSize(unsigned int sz);
-    
-    void setFont(sf::Font f);
-    
-    void setText(std::string s);
-    
-    void setTextColor(sf::Color clr);
+    ImprovedText();
+    ImprovedText(std::string text, sf::Font& font, unsigned int characterSize, sf::Color color, sf::Rect<int> alignRectangle);
+    ImprovedText(std::string text, sf::Font& font, unsigned int characterSize, sf::Color color, sf::Rect<float> alignRectangle);
 };
 
 

@@ -1,132 +1,71 @@
 #include "ImprovedText.hpp"
+#include <math.h>
 
-
-
-void ImprovedText::calculateStartPosition()
+ImprovedText::ImprovedText()
 {
-    int textWidth = (text_.size() - 1);
-    int textHeight = font_.getGlyph('x', characterSize_, false).bounds.height;
     
-    for (int i = 0; i < text_.size(); i++)
-    {
-        if (text_[i] == ' ')
-        {
-            textWidth += round(characterSize_ / 4);
-        }
-        else
-        {
-            textWidth += glyphMap_[text_[i]].bounds.width;
-        }
-    }
-    
-    currentPosition_.x = alignRectangle_.left + ceil((alignRectangle_.width - textWidth) / 2);
-    currentPosition_.y = alignRectangle_.top + ceil((alignRectangle_.height + textHeight) / 2);
 }
 
-void ImprovedText::resetText()
+ImprovedText::ImprovedText(std::string text, sf::Font& font, unsigned int characterSize, sf::Color color, sf::Rect<int> alignRectangle)
 {
-    glyphMap_.clear();
-    spriteVector_.clear();
+    setString(text);
+    setFont(font);
+    setCharacterSize(characterSize);
+    setFillColor(color);
+    setAlignRectangle(alignRectangle);
+    setPosition(calculateStartPosition());
     
-    std::unordered_set<char> tempSet;
-    std::unordered_set<char>::iterator it;
-    for (int i = 0; i < text_.size(); i++)
-    {
-        tempSet.insert(text_[i]);
-    }
-    for (it = tempSet.begin(); it != tempSet.end(); it++)
-    {
-        glyphMap_[*it] = font_.getGlyph(*it, characterSize_, false);
-    }
-    
-    bitmap_ = font_.getTexture(characterSize_);
-    
-    calculateStartPosition();
-    
-    for (int i = 0; i < text_.size(); i++)
-    {
-        if (text_[i] == ' ')
-        {
-            currentPosition_.x += round(characterSize_ / 4);
-            spriteVector_.push_back(sf::Sprite());
-        }
-        else
-        {
-            sf::Sprite tempSprite = sf::Sprite(bitmap_, glyphMap_[text_[i]].textureRect);
-            tempSprite.setPosition(sf::Vector2f(currentPosition_.x, currentPosition_.y + glyphMap_[text_[i]].bounds.top));
-            tempSprite.setColor(textColor_);
-            spriteVector_.push_back(tempSprite);
-            
-            currentPosition_.x += tempSprite.getGlobalBounds().width + 1;
-            if (i != text_.size() - 1)
-            {
-                currentPosition_.x += font_.getKerning(text_[i], text_[i + 1], characterSize_);
-            }
-        }
-    }
 }
 
-ImprovedText::ImprovedText(std::string str, sf::Font fnt, unsigned int sz, sf::Color clr, sf::Rect<float> alignRect)
+ImprovedText::ImprovedText(std::string text, sf::Font& font, unsigned int characterSize, sf::Color color, sf::Rect<float> alignRectangle)
 {
-    text_ = str;
-    font_ = fnt;
-    characterSize_ = sz;
-    textColor_ = clr;
-    
-    alignRectangle_.left = alignRect.left;
-    alignRectangle_.top = alignRect.top;
-    alignRectangle_.width = alignRect.width;
-    alignRectangle_.height = alignRect.height;
-    
-    resetText();
+    setString(text);
+    setFont(font);
+    setCharacterSize(characterSize);
+    setFillColor(color);
+    setAlignRectangle(alignRectangle);
+    setPosition(calculateStartPosition());
 }
 
-ImprovedText::ImprovedText(std::string str, sf::Font fnt, unsigned int sz, sf::Color clr, sf::Rect<int> alignRect)
+sf::Vector2f ImprovedText::calculateStartPosition()
 {
-    text_ = str;
-    font_ = fnt;
-    characterSize_ = sz;
-    textColor_ = clr;
-    
-    alignRectangle_ = alignRect;
-    
-    resetText();
+    sf::Vector2f position;
+    position.x = (alignRectangle_.left + floor((alignRectangle_.width - getLocalBounds().width) / 2) - getLocalBounds().left);
+    position.y = (alignRectangle_.top + ceil((alignRectangle_.height + getFont()->getGlyph('x', getCharacterSize(), false).bounds.height) / 2) - getCharacterSize());
+    return position;
 }
 
-void ImprovedText::setSize(unsigned int sz)
+sf::Vector2f ImprovedText::calculateStartPosition(sf::Rect<int> alignRectangle)
 {
-    characterSize_ = sz;
-    resetText();
+    sf::Vector2f position;
+    position.x = (alignRectangle.left + floor((alignRectangle.width - getLocalBounds().width) / 2) - getLocalBounds().left);
+    position.y = (alignRectangle.top + ceil((alignRectangle.height + getFont()->getGlyph('x', getCharacterSize(), false).bounds.height) / 2) - getCharacterSize());
+    return position;
 }
 
-void ImprovedText::setFont(sf::Font f)
+sf::Vector2f ImprovedText::calculateStartPosition(sf::Rect<float> alignRectangle)
 {
-    font_ = f;
-    resetText();
+    sf::Vector2f position;
+    position.x = (alignRectangle.left + floor((alignRectangle.width - getLocalBounds().width) / 2));
+    position.y = (alignRectangle.top + ceil((alignRectangle.height + getFont()->getGlyph('x', getCharacterSize(), false).bounds.height) / 2)) - getCharacterSize();
+    return position;
 }
 
-void ImprovedText::setText(std::string s)
+void ImprovedText::setText(std::string text)
 {
-    text_ = s;
-    resetText();
+    setString(text);
+    setPosition(calculateStartPosition(alignRectangle_));
 }
 
-void ImprovedText::setTextColor(sf::Color clr)
+void ImprovedText::setAlignRectangle(sf::Rect<int> alignRectangle)
 {
-    textColor_ = clr;
-    for (int i = 0; i < spriteVector_.size(); i++)
-    {
-        spriteVector_[i].setColor(textColor_);
-    }
+    alignRectangle_ = alignRectangle;
 }
 
-void ImprovedText::draw(sf::RenderTarget &target, sf::RenderStates states) const
+void ImprovedText::setAlignRectangle(sf::Rect<float> alignRectangle)
 {
-    for (int i = 0; i < text_.size(); i++)
-    {
-        if (text_[i] != ' ')
-        {
-            target.draw(spriteVector_[i]);
-        }
-    }
+    alignRectangle_.top = round(alignRectangle.top);
+    alignRectangle_.left = round(alignRectangle.left);
+    alignRectangle_.width = round(alignRectangle.width);
+    alignRectangle_.height = round(alignRectangle.height);
 }
