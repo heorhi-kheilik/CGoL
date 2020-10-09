@@ -7,8 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		358EF018252A933E008EEDB1 /* SFProDisplay-Thin.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 358EF017252A933E008EEDB1 /* SFProDisplay-Thin.ttf */; };
 		358EF01A252A938A008EEDB1 /* icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 358EF019252A938A008EEDB1 /* icon.png */; };
+		358F4B3E2530EB1C00D925F6 /* SanFrancisco.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 358F4B3D2530EB1C00D925F6 /* SanFrancisco.ttf */; };
+		358F4B412530F77D00D925F6 /* Canvas.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 358F4B3F2530F77D00D925F6 /* Canvas.cpp */; };
 		3594478824F5BB7700F6DDCA /* ResourcePath.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3594478724F5BB7700F6DDCA /* ResourcePath.mm */; };
 		3594478B24F5BB7700F6DDCA /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3594478A24F5BB7700F6DDCA /* main.cpp */; };
 		3594479C24F5DE0400F6DDCA /* AdvancedMouse.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3594479A24F5DE0400F6DDCA /* AdvancedMouse.cpp */; };
@@ -18,8 +19,10 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		358EF017252A933E008EEDB1 /* SFProDisplay-Thin.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "SFProDisplay-Thin.ttf"; sourceTree = "<group>"; };
 		358EF019252A938A008EEDB1 /* icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon.png; sourceTree = "<group>"; };
+		358F4B3D2530EB1C00D925F6 /* SanFrancisco.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = SanFrancisco.ttf; sourceTree = "<group>"; };
+		358F4B3F2530F77D00D925F6 /* Canvas.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Canvas.cpp; sourceTree = "<group>"; };
+		358F4B402530F77D00D925F6 /* Canvas.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Canvas.hpp; sourceTree = "<group>"; };
 		3594478224F5BB7700F6DDCA /* game.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = game.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		3594478624F5BB7700F6DDCA /* game-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = "game-Info.plist"; path = "../game-Info.plist"; sourceTree = "<group>"; };
 		3594478724F5BB7700F6DDCA /* ResourcePath.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = ResourcePath.mm; sourceTree = "<group>"; };
@@ -68,16 +71,18 @@
 				3594478A24F5BB7700F6DDCA /* main.cpp */,
 				3594478924F5BB7700F6DDCA /* ResourcePath.hpp */,
 				3594479B24F5DE0400F6DDCA /* AdvancedMouse.hpp */,
-				3594479E24F5DE3200F6DDCA /* RectangleButton.hpp */,
-				359447A124F5DE6200F6DDCA /* RectangleBounds.hpp */,
+				358F4B402530F77D00D925F6 /* Canvas.hpp */,
 				359447A424F5DE8E00F6DDCA /* ImprovedText.hpp */,
+				359447A124F5DE6200F6DDCA /* RectangleBounds.hpp */,
+				3594479E24F5DE3200F6DDCA /* RectangleButton.hpp */,
 				3594478C24F5BB7700F6DDCA /* Resources */,
 				3594478524F5BB7700F6DDCA /* Supporting Files */,
 				3594478724F5BB7700F6DDCA /* ResourcePath.mm */,
 				3594479A24F5DE0400F6DDCA /* AdvancedMouse.cpp */,
-				3594479D24F5DE3200F6DDCA /* RectangleButton.cpp */,
-				359447A024F5DE6200F6DDCA /* RectangleBounds.cpp */,
+				358F4B3F2530F77D00D925F6 /* Canvas.cpp */,
 				359447A324F5DE8E00F6DDCA /* ImprovedText.cpp */,
+				359447A024F5DE6200F6DDCA /* RectangleBounds.cpp */,
+				3594479D24F5DE3200F6DDCA /* RectangleButton.cpp */,
 			);
 			path = game;
 			sourceTree = "<group>";
@@ -93,8 +98,8 @@
 		3594478C24F5BB7700F6DDCA /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				358F4B3D2530EB1C00D925F6 /* SanFrancisco.ttf */,
 				358EF019252A938A008EEDB1 /* icon.png */,
-				358EF017252A933E008EEDB1 /* SFProDisplay-Thin.ttf */,
 			);
 			path = Resources;
 			sourceTree = "<group>";
@@ -157,8 +162,8 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				358EF018252A933E008EEDB1 /* SFProDisplay-Thin.ttf in Resources */,
 				358EF01A252A938A008EEDB1 /* icon.png in Resources */,
+				358F4B3E2530EB1C00D925F6 /* SanFrancisco.ttf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -192,6 +197,7 @@
 				359447A524F5DE8E00F6DDCA /* ImprovedText.cpp in Sources */,
 				359447A224F5DE6200F6DDCA /* RectangleBounds.cpp in Sources */,
 				3594478B24F5BB7700F6DDCA /* main.cpp in Sources */,
+				358F4B412530F77D00D925F6 /* Canvas.cpp in Sources */,
 				3594479F24F5DE3200F6DDCA /* RectangleButton.cpp in Sources */,
 				3594479C24F5DE0400F6DDCA /* AdvancedMouse.cpp in Sources */,
 				3594478824F5BB7700F6DDCA /* ResourcePath.mm in Sources */,

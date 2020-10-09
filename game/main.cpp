@@ -33,6 +33,7 @@
 #include "RectangleButton.hpp"
 #include "ImprovedText.hpp"
 #include "ResourcePath.hpp"
+#include "Canvas.hpp"
 
 const int MIN_TIMER_VALUE = 100;
 const int MAX_TIMER_VALUE = 1000;
@@ -82,25 +83,18 @@ std::string doubleToString(double d)
 // </Helper functions>
 
 // <Game logic>
-void tileSetToMatrix(std::vector< std::vector<RectangleButton> >& tileSet, std::vector< std::vector<bool> >& matrix)
+void tileSetToMatrix(Canvas& tileSet, std::vector< std::vector<bool> >& matrix)
 {
     for (int i = 0; i < _fieldWidth; i++)
     {
         for (int j = 0; j < _fieldHeight; j++)
         {
-            if (tileSet[i][j].getFillColor() == sf::Color::White)
-            {
-                matrix[i][j] = true;
-            }
-            else
-            {
-                matrix[i][j] = false;
-            }
+            matrix[i][j] = (tileSet.drawingCanvas[i][j].getFillColor() == sf::Color::White);
         }
     }
 }
 
-void matrixToTileSet(std::vector< std::vector<RectangleButton> >& tileSet, std::vector< std::vector<bool> >& matrix)
+void matrixToTileSet(Canvas& tileSet, std::vector< std::vector<bool> >& matrix)
 {
     for (int i = 0; i < _fieldWidth; i++)
     {
@@ -108,11 +102,11 @@ void matrixToTileSet(std::vector< std::vector<RectangleButton> >& tileSet, std::
         {
             if (matrix[i][j])
             {
-                tileSet[i][j].setFillColor(sf::Color::White);
+                tileSet.drawingCanvas[i][j].setFillColor(sf::Color::White);
             }
             else
             {
-                tileSet[i][j].setFillColor(sf::Color::Black);
+                tileSet.drawingCanvas[i][j].setFillColor(sf::Color::Black);
             }
         }
     }
@@ -374,7 +368,7 @@ void calculateNextTurn()
     _lastMatrix = newMatrix;
 }
 
-void setNextTurn(std::vector< std::vector<RectangleButton> >& tileSet, unsigned int& amountOfTurns, ImprovedText& amountOfTurnsText)
+void setNextTurn(Canvas& tileSet, unsigned int& amountOfTurns, ImprovedText& amountOfTurnsText)
 {
     if (_nextTurns.size() > 0)
     {
@@ -448,7 +442,7 @@ void disableDrawChoice(sf::RenderWindow& window, RectangleButton& randomFieldFil
 
 // <DrawField functions>
 void enableDrawField(RectangleButton& colorSwitcher, RectangleButton& gridSwitcher, RectangleButton& minusSpeedButton, RectangleButton& plusSpeedButton,
-                     RectangleButton& eraseAllButton, RectangleButton& moveToGameStageButton, std::vector< std::vector<RectangleButton> >& tileSet)
+                     RectangleButton& eraseAllButton, RectangleButton& moveToGameStageButton, Canvas& tileSet)
 {
     colorSwitcher.interactable = true;
     gridSwitcher.interactable = true;
@@ -456,13 +450,7 @@ void enableDrawField(RectangleButton& colorSwitcher, RectangleButton& gridSwitch
     plusSpeedButton.interactable = true;
     eraseAllButton.interactable = true;
     moveToGameStageButton.interactable = true;
-    for (int i = 0; i < _fieldWidth; i++)
-    {
-        for (int j = 0; j < _fieldHeight; j++)
-        {
-            tileSet[i][j].interactable = true;
-        }
-    }
+    tileSet.isActive = true;
 }
 
 void displayDrawField(sf::RenderWindow& window, sf::RectangleShape& divisorRect,
@@ -473,7 +461,7 @@ void displayDrawField(sf::RenderWindow& window, sf::RectangleShape& divisorRect,
                       RectangleButton& plusSpeedButton,       ImprovedText& plusSpeedButtonText,
                       RectangleButton& eraseAllButton,        ImprovedText& eraseAllButtonText,
                       RectangleButton& moveToGameStageButton, ImprovedText& moveToGameStageButtonText,
-                      std::vector<sf::RectangleShape>& grid, std::vector< std::vector<RectangleButton> >& tileSet)
+                      std::vector<sf::RectangleShape>& grid, Canvas& tileSet)
 {
     window.clear(sf::Color::Black);
     
@@ -498,13 +486,7 @@ void displayDrawField(sf::RenderWindow& window, sf::RectangleShape& divisorRect,
     
     window.draw(divisorRect);
     
-    for (int i = 0; i < _fieldWidth; i++)
-    {
-        for (int j = 0; j < _fieldHeight; j++)
-        {
-            window.draw(tileSet[i][j]);
-        }
-    }
+    window.draw(tileSet);
     
     for (int i = 0; i < grid.size(); i++)
     {
@@ -518,7 +500,7 @@ void updateDrawField(sf::RenderWindow& window, AdvancedMouse& mouse,
                      RectangleButton& colorSwitcher,    RectangleButton& gridSwitcher,
                      RectangleButton& minusSpeedButton, RectangleButton& plusSpeedButton,
                      RectangleButton& eraseAllButton,   RectangleButton& moveToGameStageButton,
-                     std::vector< std::vector<RectangleButton> >& tileSet)
+                     Canvas& tileSet)
 {
     mouse.updateCondition(window);
     colorSwitcher.updateButtonCondition(mouse, window);
@@ -527,28 +509,16 @@ void updateDrawField(sf::RenderWindow& window, AdvancedMouse& mouse,
     plusSpeedButton.updateButtonCondition(mouse, window);
     eraseAllButton.updateButtonCondition(mouse, window);
     moveToGameStageButton.updateButtonCondition(mouse, window);
-    for (int i = 0; i < _fieldWidth; i++)
-    {
-        for (int j = 0; j < _fieldHeight; j++)
-        {
-            tileSet[i][j].updateButtonCondition(mouse, window);
-        }
-    }
+    tileSet.updateCondition(mouse, window);
 }
 
 void disableDrawField(RectangleButton& colorSwitcher, RectangleButton& moveToGameStageButton,
-                      std::vector< std::vector<RectangleButton> >& tileSet,
+                      Canvas& tileSet,
                       ImprovedText& colorSwitcherText, sf::Color& drawColor)
 {
     colorSwitcher.interactable = false;
     moveToGameStageButton.interactable = false;
-    for (int i = 0; i < _fieldWidth; i++)
-    {
-        for (int j = 0; j < _fieldHeight; j++)
-        {
-            tileSet[i][j].interactable = false;
-        }
-    }
+    tileSet.isActive = false;
     
     colorSwitcherText.setText("White");
     drawColor = sf::Color::White;
@@ -566,8 +536,7 @@ void enableGame(RectangleButton& gridSwitcher, RectangleButton& minusSpeedButton
     pauseButton.interactable = true;
 }
 
-void initializeGame(std::vector< std::vector<RectangleButton> >& tileSet, bool isRandom,
-                    std::chrono::steady_clock::time_point& timePoint)
+void initializeGame(Canvas& tileSet, bool isRandom, std::chrono::steady_clock::time_point& timePoint)
 {
     if (isRandom)
     {
@@ -597,7 +566,7 @@ void displayGame(sf::RenderWindow& window, sf::RectangleShape& divisorRect,
                  RectangleButton&    plusSpeedButton,   ImprovedText& plusSpeedButtonText,
                  RectangleButton&    newGameButton,     ImprovedText& newGameButtonText,
                  RectangleButton&    pauseButton,       ImprovedText& pauseButtonText,
-                 std::vector<sf::RectangleShape>& grid, std::vector< std::vector<RectangleButton> >& tileSet,
+                 std::vector<sf::RectangleShape>& grid, Canvas& tileSet,
                  sf::RectangleShape& aysBackground, ImprovedText& aysText,
                  RectangleButton&    aysYes,        ImprovedText& aysYesText,
                  RectangleButton&    aysNo,         ImprovedText& aysNoText,
@@ -608,13 +577,7 @@ void displayGame(sf::RenderWindow& window, sf::RectangleShape& divisorRect,
     // <Standart display>
     window.draw(divisorRect);
     
-    for (int i = 0; i < _fieldWidth; i++)
-    {
-        for (int j = 0; j < _fieldHeight; j++)
-        {
-            window.draw(tileSet[i][j]);
-        }
-    }
+    window.draw(tileSet);
     
     window.draw(amountOfTurnsRect);
     window.draw(gridSwitcher);
@@ -681,7 +644,7 @@ void updateGame(sf::RenderWindow& window, AdvancedMouse& mouse,
 }
 
 void disableGame(unsigned int& amountOfTurns,
-                 std::vector<sf::RectangleShape>& grid, std::vector< std::vector<RectangleButton> >& tileSet,
+                 std::vector<sf::RectangleShape>& grid, Canvas& tileSet,
                  RectangleButton& gridSwitcher, RectangleButton& minusSpeedButton, RectangleButton& plusSpeedButton,
                  RectangleButton& newGameButton, RectangleButton& pauseButton,
                  ImprovedText& amountOfTurnsText, ImprovedText& gridSwitcherText, ImprovedText& pauseButtonText)
@@ -693,11 +656,12 @@ void disableGame(unsigned int& amountOfTurns,
         grid[i].setFillColor(sf::Color::Black);
     }
     
+    tileSet.isActive = false;
     for (int i = 0; i < _fieldWidth; i++)
     {
         for (int j = 0; j < _fieldHeight; j++)
         {
-            tileSet[i][j].setFillColor(sf::Color::Black);
+            tileSet.drawingCanvas[i][j].setFillColor(sf::Color::Black);
         }
     }
     
@@ -715,7 +679,7 @@ void disableGame(unsigned int& amountOfTurns,
 }
 
 void darkenGame(sf::RectangleShape& divisorRect,
-                std::vector< std::vector<RectangleButton> >& tileSet, std::vector<sf::RectangleShape>& grid,
+                Canvas& tileSet, std::vector<sf::RectangleShape>& grid,
                 sf::RectangleShape& amountOfTurnsRect, sf::RectangleShape& speedSwitchBackground,
                 RectangleButton& gridSwitcher,  RectangleButton& minusSpeedButton, RectangleButton& plusSpeedButton,
                 RectangleButton& newGameButton, RectangleButton& pauseButton,
@@ -743,16 +707,16 @@ void darkenGame(sf::RectangleShape& divisorRect,
     {
         for (int j = 0; j < _fieldHeight; j++)
         {
-            if (tileSet[i][j].getFillColor() == sf::Color::White)
+            if (tileSet.drawingCanvas[i][j].getFillColor() == sf::Color::White)
             {
-                tileSet[i][j].setFillColor(darkTileSet);
+                tileSet.drawingCanvas[i][j].setFillColor(darkTileSet);
             }
         }
     }
 }
 
 void lightenGame(sf::RectangleShape& divisorRect,
-                 std::vector< std::vector<RectangleButton> >& tileSet, std::vector<sf::RectangleShape>& grid,
+                 Canvas& tileSet, std::vector<sf::RectangleShape>& grid,
                  sf::RectangleShape& amountOfTurnsRect, sf::RectangleShape& speedSwitchBackground,
                  RectangleButton& gridSwitcher,  RectangleButton& minusSpeedButton, RectangleButton& plusSpeedButton,
                  RectangleButton& newGameButton, RectangleButton& pauseButton,
@@ -780,9 +744,9 @@ void lightenGame(sf::RectangleShape& divisorRect,
     {
         for (int j = 0; j < _fieldHeight; j++)
         {
-            if (tileSet[i][j].getFillColor() == darkTileSet)
+            if (tileSet.drawingCanvas[i][j].getFillColor() == darkTileSet)
             {
-                tileSet[i][j].setFillColor(sf::Color::White);
+                tileSet.drawingCanvas[i][j].setFillColor(sf::Color::White);
             }
         }
     }
@@ -807,7 +771,7 @@ int main(int, char const**)
     AdvancedMouse mouse;
     
     sf::Font font;
-    if (!font.loadFromFile(resourcePath() + "SFProDisplay-Thin.ttf"))
+    if (!font.loadFromFile(resourcePath() + "SanFrancisco.ttf"))
     {
         std::cout << "hell no" << std::endl;
     }
@@ -850,25 +814,40 @@ int main(int, char const**)
     
     _fieldWidth--;
     _fieldHeight--;
-    std::vector<sf::RectangleShape> grid(_fieldWidth + _fieldHeight);
-    float posX = 298.f, posY = 1.f;
+    std::vector<sf::RectangleShape> grid(_fieldWidth + _fieldHeight + 4);
+    float posX = 298.f, posY = 0.f;
     int gridPlaceCounter = 0;
     for ( ; gridPlaceCounter < _fieldWidth; gridPlaceCounter++)
     {
         grid[gridPlaceCounter].setPosition(sf::Vector2f(posX, posY));
-        grid[gridPlaceCounter].setSize(sf::Vector2f(2.f, 718.f));
+        grid[gridPlaceCounter].setSize(sf::Vector2f(2.f, 720.f));
         grid[gridPlaceCounter].setFillColor(sf::Color::Black);
         posX += 20.f;
     }
-    posX = 280.f;
+    posX = 279.f;
     posY = 19.f;
-    for ( ; gridPlaceCounter < grid.size(); gridPlaceCounter++)
+    for ( ; gridPlaceCounter < (grid.size() - 4); gridPlaceCounter++)
     {
         grid[gridPlaceCounter].setPosition(sf::Vector2f(posX, posY));
-        grid[gridPlaceCounter].setSize(sf::Vector2f(998.f, 2.f));
+        grid[gridPlaceCounter].setSize(sf::Vector2f(1000.f, 2.f));
         grid[gridPlaceCounter].setFillColor(sf::Color::Black);
         posY += 20.f;
     }
+    grid[grid.size() - 4].setPosition(sf::Vector2f(279.f, 0.f));
+    grid[grid.size() - 4].setSize(sf::Vector2f(1000.f, 1.f));
+    grid[grid.size() - 4].setFillColor(sf::Color::Black);
+    
+    grid[grid.size() - 3].setPosition(sf::Vector2f(279.f, 719.f));
+    grid[grid.size() - 3].setSize(sf::Vector2f(1000.f, 1.f));
+    grid[grid.size() - 3].setFillColor(sf::Color::Black);
+    
+    grid[grid.size() - 2].setPosition(sf::Vector2f(279.f, 0.f));
+    grid[grid.size() - 2].setSize(sf::Vector2f(1.f, 720.f));
+    grid[grid.size() - 2].setFillColor(sf::Color::Black);
+    
+    grid[grid.size() - 1].setPosition(sf::Vector2f(1278.f, 0.f));
+    grid[grid.size() - 1].setSize(sf::Vector2f(1.f, 720.f));
+    grid[grid.size() - 1].setFillColor(sf::Color::Black);
     sf::Color darkGrid = sf::Color(128, 0, 0, 255);
     _fieldWidth++;
     _fieldHeight++;
@@ -909,19 +888,7 @@ int main(int, char const**)
     
     sf::Color drawColor = sf::Color::White;
 
-    std::vector< std::vector<RectangleButton> > tileSet(50, std::vector<RectangleButton>(36));
-    posX = 280.f;
-    for (int i = 0; i < _fieldWidth; i++)
-    {
-        posY = 1.f;
-        for (int j = 0; j < _fieldHeight; j++)
-        {
-            tileSet[i][j] = RectangleButton(sf::Vector2f(posX, posY), sf::Vector2f(18.f, 18.f), sf::Color::Black);
-            tileSet[i][j].buttonType = ButtonType::DrawButton;
-            posY += 20.f;
-        }
-        posX += 20.f;
-    }
+    Canvas tileSet(279, 0, 1000, 720, (1000 / _fieldWidth), (720 / _fieldHeight), mouse, mainWindow);
     sf::Color darkTileSet = sf::Color(128, 128, 128, 255);
     
     std::chrono::steady_clock::time_point timePoint = std::chrono::steady_clock::now();
@@ -944,7 +911,7 @@ int main(int, char const**)
     RectangleButton newGameButton(sf::Vector2f(50.f, 470.f), sf::Vector2f(174.f, 75.f), sf::Color::White);
     newGameButton.buttonType = ButtonType::ClickOnRelease;
     
-    ImprovedText newGameButtonText("New Game", font, 38, sf::Color::Black, newGameButton.getGlobalBounds());
+    ImprovedText newGameButtonText("New Game", font, 35, sf::Color::Black, newGameButton.getGlobalBounds());
     
     
     bool gameIsPaused = false;
@@ -1112,7 +1079,7 @@ int main(int, char const**)
                     {
                         for (int j = 0; j < _fieldHeight; j++)
                         {
-                            tileSet[i][j].setFillColor(sf::Color::Black);
+                            tileSet.drawingCanvas[i][j].setFillColor(sf::Color::Black);
                         }
                     }
                 }
@@ -1125,16 +1092,9 @@ int main(int, char const**)
                     gameStage = GameStage::Game;
                 }
                 
-                for (int i = 0; i < _fieldWidth; i++)
+                for (std::pair<int, int> p : tileSet.changedUnits)
                 {
-                    for (int j = 0; j < _fieldHeight; j++)
-                    {
-                        if (tileSet[i][j].isPressed)
-                        {
-                            tileSet[i][j].setFillColor(drawColor);
-                        }
-                        mainWindow.draw(tileSet[i][j]);
-                    }
+                    tileSet.drawingCanvas[p.first][p.second].setFillColor(drawColor);
                 }
 
                 if (colorSwitcher.isPressed)
@@ -1249,7 +1209,6 @@ int main(int, char const**)
                 {
                     if (nextTurnTimer < MAX_TIMER_VALUE)
                     {
-//                        timePoint = std::chrono::steady_clock::now();
                         nextTurnTimer += 10;
                         textTurnTimer = nextTurnTimer / 1000.0;
                         currentSpeedText.setText("1/" + doubleToString(textTurnTimer) + "s");
@@ -1260,7 +1219,6 @@ int main(int, char const**)
                 {
                     if (nextTurnTimer > MIN_TIMER_VALUE)
                     {
-//                        timePoint = std::chrono::steady_clock::now();
                         nextTurnTimer -= 10;
                         textTurnTimer = nextTurnTimer / 1000.0;
                         currentSpeedText.setText("1/" + doubleToString(textTurnTimer) + "s");
@@ -1466,7 +1424,7 @@ int main(int, char const**)
                             {
                                 for (int j = 0; j < _fieldHeight; j++)
                                 {
-                                    tileSet[i][j].interactable = false;
+                                    tileSet.isActive = false;
                                 }
                             }
                             break; // DrawField
@@ -1502,7 +1460,7 @@ int main(int, char const**)
                             {
                                 for (int j = 0; j < _fieldHeight; j++)
                                 {
-                                    tileSet[i][j].interactable = true;
+                                    tileSet.isActive = true;
                                 }
                             }
                             break; // DrawField
