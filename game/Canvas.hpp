@@ -5,8 +5,7 @@
 #include <SFML/Graphics.hpp>
 #include "AdvancedMouse.hpp"
 
-class Canvas : public sf::Drawable
-{
+class Canvas : public sf::Drawable {
 private:
     sf::Rect<int> canvasRectangle_;
     int unitWidth_, unitHeight_;
@@ -28,6 +27,5 @@ public:
     void updateCondition(AdvancedMouse& ms, sf::RenderWindow& window);
     void draw(sf::RenderTarget& target, sf::RenderStates states) const;
 };
-
 
 #endif /* Canvas_hpp */

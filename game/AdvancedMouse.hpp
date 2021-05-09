@@ -3,23 +3,19 @@
 
 #include <SFML/Graphics.hpp>
 
-enum PressStage
-{
+enum PressStage {
     NotPressed,
     JustPressed,
     Pressed,
     Released
 };
 
-class AdvancedMouse : public sf::Mouse
-{
+class AdvancedMouse : public sf::Mouse {
 public:
     PressStage stage = PressStage::NotPressed;
     bool canPressButton = true;
     
-    
     bool isInWindow(sf::RenderWindow &window);
-    
     void updateCondition(sf::RenderWindow &window);
 };
 

@@ -1,12 +1,9 @@
 #ifndef ImprovedText_hpp
 #define ImprovedText_hpp
 
-
-
 #include <SFML/Graphics.hpp>
 
-class ImprovedText : public sf::Text
-{
+class ImprovedText : public sf::Text {
 private:
     sf::Rect<int> alignRectangle_;
     
@@ -23,7 +20,5 @@ public:
     ImprovedText(std::string text, sf::Font& font, unsigned int characterSize, sf::Color color, sf::Rect<int> alignRectangle);
     ImprovedText(std::string text, sf::Font& font, unsigned int characterSize, sf::Color color, sf::Rect<float> alignRectangle);
 };
-
-
 
 #endif /* ImprovedText_hpp */

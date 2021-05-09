@@ -1,18 +1,3 @@
-//
-// Disclaimer:
-// ----------
-//
-// This code will work only if you selected window, graphics and audio.
-//
-// Note that the "Run Script" build phase will copy the required frameworks
-// or dylibs to your application bundle so you can execute it on any OS X
-// computer.
-//
-// Your resource files (images, sounds, fonts, ...) are also copied to your
-// application bundle. To get the path to these resources, use the helper
-// function `resourcePath()` from ResourcePath.hpp
-//
-
 #include <iostream>
 #include <fstream>
 #include <chrono>
@@ -45,322 +30,73 @@ std::queue< std::vector< std::vector<bool> > > _nextTurns;
 std::future<void> _calculationHandle;
 bool _exceptionBool = false;
 
-enum GameStage
-{
+enum GameStage {
     DrawChoice,
     DrawField,
     Game
 };
 
-
 // <Helper functions>
-void clearQueue(std::queue< std::vector< std::vector<bool> > > &q)
-{
+void clearQueue(std::queue< std::vector< std::vector<bool> > > &q) {
    std::queue< std::vector< std::vector<bool> > > empty;
    std::swap(q, empty);
 }
 
-std::string cropZeroes(std::string s)
-{
-    for (int i = s.size() - 1; i >= 0; i--)
-    {
-        if (s[i] == '0' || s[i] == '.')
-        {
-            s.pop_back();
-        }
-        else
-        {
-            return s;
-        }
+std::string cropZeroes(std::string s) {
+    for (int i = s.size() - 1; i >= 0; i--) {
+        if (s[i] == '0' || s[i] == '.') s.pop_back();
+        else return s;
     }
     return s;
 }
 
-std::string doubleToString(double d)
-{
-    return cropZeroes(std::to_string(d));
-}
+std::string doubleToString(double d) { return cropZeroes(std::to_string(d)); }
 // </Helper functions>
 
 // <Game logic>
-void tileSetToMatrix(Canvas& tileSet, std::vector< std::vector<bool> >& matrix)
-{
+void tileSetToMatrix(Canvas& tileSet, std::vector< std::vector<bool> >& matrix) {
     for (int i = 0; i < _fieldWidth; i++)
-    {
         for (int j = 0; j < _fieldHeight; j++)
-        {
             matrix[i][j] = (tileSet.drawingCanvas[i][j].getFillColor() == sf::Color::White);
-        }
-    }
 }
 
-void matrixToTileSet(Canvas& tileSet, std::vector< std::vector<bool> >& matrix)
-{
+void matrixToTileSet(Canvas& tileSet, std::vector< std::vector<bool> >& matrix) {
     for (int i = 0; i < _fieldWidth; i++)
-    {
         for (int j = 0; j < _fieldHeight; j++)
-        {
-            if (matrix[i][j])
-            {
-                tileSet.drawingCanvas[i][j].setFillColor(sf::Color::White);
-            }
-            else
-            {
-                tileSet.drawingCanvas[i][j].setFillColor(sf::Color::Black);
-            }
-        }
-    }
+            tileSet.drawingCanvas[i][j].setFillColor(matrix[i][j] ? sf::Color::White : sf::Color::Black);
 }
 
-bool cellIsLucky()
-{
+bool cellIsLucky() {
     srand(time(0) * rand());
-    if ((rand() % 100) > 70)
-    {
-        return true;
-    }
-    else
-    {
-        return false;
-    }
+    return (rand() % 100) > 70;
 }
 
-void placeRandomCells(std::vector< std::vector<bool> >& matrix)
-{
+void placeRandomCells(std::vector< std::vector<bool> >& matrix) {
     for (int i = 0; i < _fieldWidth; i++)
-    {
         for (int j = 0; j < _fieldHeight; j++)
-        {
             matrix[i][j] = cellIsLucky();
-        }
-    }
 }
 
-int amountOfNeighbors(int i, int j, std::vector< std::vector<bool> >& matrix)
-{
+int amountOfNeighbors(int i, int j, std::vector< std::vector<bool> >& matrix) {
     int counter = 0;
-    if (i > 0 && i < (_fieldWidth - 1) && j > 0 && j < (_fieldHeight - 1))
-    {
-        if (matrix[i - 1][j - 1])
-        {
-            counter++;
-        }
-        if (matrix[i - 1][j])
-        {
-            counter++;
-        }
-        if (matrix[i - 1][j + 1])
-        {
-            counter++;
-        }
-        if (matrix[i][j - 1])
-        {
-            counter++;
-        }
-        if (matrix[i][j + 1])
-        {
-            counter++;
-        }
-        if (matrix[i + 1][j - 1])
-        {
-            counter++;
-        }
-        if (matrix[i + 1][j])
-        {
-            counter++;
-        }
-        if (matrix[i + 1][j + 1])
-        {
-            counter++;
-        }
-    }
-    else if (i == 0 && j > 0 && j < (_fieldHeight - 1))
-    {
-        if (matrix[i][j - 1])
-        {
-            counter++;
-        }
-        if (matrix[i][j + 1])
-        {
-            counter++;
-        }
-        if (matrix[i + 1][j - 1])
-        {
-            counter++;
-        }
-        if (matrix[i + 1][j])
-        {
-            counter++;
-        }
-        if (matrix[i + 1][j + 1])
-        {
-            counter++;
-        }
-    }
-    else if (i == (_fieldWidth - 1) && j > 0 && j < (_fieldHeight - 1))
-    {
-        if (matrix[i - 1][j - 1])
-        {
-            counter++;
-        }
-        if (matrix[i - 1][j])
-        {
-            counter++;
-        }
-        if (matrix[i - 1][j + 1])
-        {
-            counter++;
-        }
-        if (matrix[i][j - 1])
-        {
-            counter++;
-        }
-        if (matrix[i][j + 1])
-        {
-            counter++;
-        }
-    }
-    else if (i > 0 && i < (_fieldWidth - 1) && j == 0)
-    {
-        if (matrix[i - 1][j])
-        {
-            counter++;
-        }
-        if (matrix[i - 1][j + 1])
-        {
-            counter++;
-        }
-        if (matrix[i][j + 1])
-        {
-            counter++;
-        }
-        if (matrix[i + 1][j])
-        {
-            counter++;
-        }
-        if (matrix[i + 1][j + 1])
-        {
-            counter++;
-        }
-    }
-    else if (i > 0 && i < (_fieldWidth - 1) && j == (_fieldHeight - 1))
-    {
-        if (matrix[i - 1][j - 1])
-        {
-            counter++;
-        }
-        if (matrix[i - 1][j])
-        {
-            counter++;
-        }
-        if (matrix[i][j - 1])
-        {
-            counter++;
-        }
-        if (matrix[i + 1][j - 1])
-        {
-            counter++;
-        }
-        if (matrix[i + 1][j])
-        {
-            counter++;
-        }
-    }
-    else if (i == 0 && j == 0)
-    {
-        if (matrix[i][j + 1])
-        {
-            counter++;
-        }
-        if (matrix[i + 1][j])
-        {
-            counter++;
-        }
-        if (matrix[i + 1][j + 1])
-        {
-            counter++;
-        }
-    }
-    else if (i == 0 && j == (_fieldHeight - 1))
-    {
-        if (matrix[i][j - 1])
-        {
-            counter++;
-        }
-        if (matrix[i + 1][j - 1])
-        {
-            counter++;
-        }
-        if (matrix[i + 1][j])
-        {
-            counter++;
-        }
-    }
-    else if (i == (_fieldWidth - 1) && j == 0)
-    {
-        if (matrix[i - 1][j])
-        {
-            counter++;
-        }
-        if (matrix[i - 1][j + 1])
-        {
-            counter++;
-        }
-        if (matrix[i][j + 1])
-        {
-            counter++;
-        }
-    }
-    else if (i == (_fieldWidth - 1) && j == (_fieldHeight - 1))
-    {
-        if (matrix[i - 1][j - 1])
-        {
-            counter++;
-        }
-        if (matrix[i - 1][j])
-        {
-            counter++;
-        }
-        if (matrix[i][j - 1])
-        {
-            counter++;
-        }
-    }
+    for (int currentI = i - 1; currentI <= i + 1; currentI++)
+        for (int currentJ = j - 1; currentJ <= j + 1; currentJ++)
+            if (!(currentI == i && currentJ == j))
+                if (currentI >= 0 && currentI < _fieldWidth && currentJ >= 0 && currentJ < _fieldHeight)
+                    if (matrix[currentI][currentJ]) counter++;
     return counter;
 }
 
-void calculateNextTurn()
-{
+void calculateNextTurn() {
     int temp;
     std::vector< std::vector<bool> > newMatrix(_fieldWidth, std::vector<bool>(_fieldHeight));
-    for (int i = 0; i < _fieldWidth; i++)
-    {
-        for (int j = 0; j < _fieldHeight; j++)
-        {
+    
+    for (int i = 0; i < _fieldWidth; i++) {
+        for (int j = 0; j < _fieldHeight; j++) {
             temp = amountOfNeighbors(i, j, _lastMatrix);
             
-            if (_lastMatrix[i][j])
-            {
-                if (temp == 2 || temp == 3)
-                {
-                    newMatrix[i][j] = true;
-                }
-                else
-                {
-                    newMatrix[i][j] = false;
-                }
-            }
-            else
-            {
-                if (temp == 3)
-                {
-                    newMatrix[i][j] = true;
-                }
-                else
-                {
-                    newMatrix[i][j] = false;
-                }
-            }
+            if (_lastMatrix[i][j]) newMatrix[i][j] = (temp == 2 || temp == 3);
+            else newMatrix[i][j] = (temp == 3);
         }
     }
     
@@ -368,10 +104,8 @@ void calculateNextTurn()
     _lastMatrix = newMatrix;
 }
 
-void setNextTurn(Canvas& tileSet, unsigned int& amountOfTurns, ImprovedText& amountOfTurnsText)
-{
-    if (_nextTurns.size() > 0)
-    {
+void setNextTurn(Canvas& tileSet, unsigned int& amountOfTurns, ImprovedText& amountOfTurnsText) {
+    if (_nextTurns.size() > 0) {
         matrixToTileSet(tileSet, _nextTurns.front());
         amountOfTurns++;
         amountOfTurnsText.setText(std::to_string(amountOfTurns));
@@ -379,41 +113,30 @@ void setNextTurn(Canvas& tileSet, unsigned int& amountOfTurns, ImprovedText& amo
     }
 }
 
-void calculateNextTurnsSecondThread()
-{
-    while (true)
-    {
-        if (_exceptionBool) // cause exception to stop function
-        {
-            throw std::runtime_error("stop");
-        }
+void calculateNextTurnsSecondThread() {
+    while (true) {
+        if (_exceptionBool) throw std::runtime_error("stop"); // cause exception to stop function
         
         std::this_thread::sleep_for(std::chrono::milliseconds(20));
-        if (_nextTurns.size() < 10)
-        {
-            calculateNextTurn();
-        }
+        if (_nextTurns.size() < 10) calculateNextTurn();
     }
 }
 // </Game logic>
 
-void windowStart(sf::RenderWindow& window)
-{
+void windowStart(sf::RenderWindow& window) {
     window.setFramerateLimit(120);
     window.clear(sf::Color::Black);
     window.display();
 }
 
 // <DrawChoice functions>
-void enableDrawChoice(RectangleButton& randomFieldFill, RectangleButton& drawField)
-{
+void enableDrawChoice(RectangleButton& randomFieldFill, RectangleButton& drawField) {
     randomFieldFill.interactable = true;
     drawField.interactable = true;
 }
 
 void displayDrawChoice(sf::RenderWindow& window, RectangleButton& randomFieldFill, ImprovedText& randomFieldFillText,
-                       RectangleButton& drawField, ImprovedText& drawFieldText)
-{
+                       RectangleButton& drawField, ImprovedText& drawFieldText) {
     window.clear(sf::Color::Black);
     
     window.draw(randomFieldFill);
@@ -426,15 +149,13 @@ void displayDrawChoice(sf::RenderWindow& window, RectangleButton& randomFieldFil
 }
 
 void updateDrawChoice(sf::RenderWindow& window, AdvancedMouse& mouse,
-                      RectangleButton& randomFieldFill, RectangleButton& drawField)
-{
+                      RectangleButton& randomFieldFill, RectangleButton& drawField) {
     mouse.updateCondition(window);
     randomFieldFill.updateButtonCondition(mouse, window);
     drawField.updateButtonCondition(mouse, window);
 }
 
-void disableDrawChoice(sf::RenderWindow& window, RectangleButton& randomFieldFill, RectangleButton& drawField)
-{
+void disableDrawChoice(sf::RenderWindow& window, RectangleButton& randomFieldFill, RectangleButton& drawField) {
     randomFieldFill.interactable = false;
     drawField.interactable = false;
 }
@@ -442,8 +163,7 @@ void disableDrawChoice(sf::RenderWindow& window, RectangleButton& randomFieldFil
 
 // <DrawField functions>
 void enableDrawField(RectangleButton& colorSwitcher, RectangleButton& gridSwitcher, RectangleButton& minusSpeedButton, RectangleButton& plusSpeedButton,
-                     RectangleButton& eraseAllButton, RectangleButton& moveToGameStageButton, Canvas& tileSet)
-{
+                     RectangleButton& eraseAllButton, RectangleButton& moveToGameStageButton, Canvas& tileSet) {
     colorSwitcher.interactable = true;
     gridSwitcher.interactable = true;
     minusSpeedButton.interactable = true;
@@ -454,15 +174,14 @@ void enableDrawField(RectangleButton& colorSwitcher, RectangleButton& gridSwitch
 }
 
 void displayDrawField(sf::RenderWindow& window, sf::RectangleShape& divisorRect,
-                      RectangleButton& colorSwitcher,         ImprovedText& colorSwitcherText,
-                      RectangleButton& gridSwitcher,          ImprovedText& gridSwitcherText,
+                      RectangleButton& colorSwitcher,            ImprovedText& colorSwitcherText,
+                      RectangleButton& gridSwitcher,             ImprovedText& gridSwitcherText,
                       sf::RectangleShape& speedSwitchBackground, ImprovedText& currentSpeedText,
-                      RectangleButton& minusSpeedButton,      ImprovedText& minusSpeedButtonText,
-                      RectangleButton& plusSpeedButton,       ImprovedText& plusSpeedButtonText,
-                      RectangleButton& eraseAllButton,        ImprovedText& eraseAllButtonText,
-                      RectangleButton& moveToGameStageButton, ImprovedText& moveToGameStageButtonText,
-                      std::vector<sf::RectangleShape>& grid, Canvas& tileSet)
-{
+                      RectangleButton& minusSpeedButton,         ImprovedText& minusSpeedButtonText,
+                      RectangleButton& plusSpeedButton,          ImprovedText& plusSpeedButtonText,
+                      RectangleButton& eraseAllButton,           ImprovedText& eraseAllButtonText,
+                      RectangleButton& moveToGameStageButton,    ImprovedText& moveToGameStageButtonText,
+                      std::vector<sf::RectangleShape>& grid, Canvas& tileSet) {
     window.clear(sf::Color::Black);
     
     window.draw(colorSwitcher);
@@ -488,10 +207,7 @@ void displayDrawField(sf::RenderWindow& window, sf::RectangleShape& divisorRect,
     
     window.draw(tileSet);
     
-    for (int i = 0; i < grid.size(); i++)
-    {
-        window.draw(grid[i]);
-    }
+    for (int i = 0; i < grid.size(); i++) window.draw(grid[i]);
     
     window.display();
 }
@@ -500,8 +216,7 @@ void updateDrawField(sf::RenderWindow& window, AdvancedMouse& mouse,
                      RectangleButton& colorSwitcher,    RectangleButton& gridSwitcher,
                      RectangleButton& minusSpeedButton, RectangleButton& plusSpeedButton,
                      RectangleButton& eraseAllButton,   RectangleButton& moveToGameStageButton,
-                     Canvas& tileSet)
-{
+                     Canvas& tileSet) {
     mouse.updateCondition(window);
     colorSwitcher.updateButtonCondition(mouse, window);
     gridSwitcher.updateButtonCondition(mouse, window);
@@ -514,8 +229,7 @@ void updateDrawField(sf::RenderWindow& window, AdvancedMouse& mouse,
 
 void disableDrawField(RectangleButton& colorSwitcher, RectangleButton& moveToGameStageButton,
                       Canvas& tileSet,
-                      ImprovedText& colorSwitcherText, sf::Color& drawColor)
-{
+                      ImprovedText& colorSwitcherText, sf::Color& drawColor) {
     colorSwitcher.interactable = false;
     moveToGameStageButton.interactable = false;
     tileSet.isActive = false;
@@ -527,8 +241,7 @@ void disableDrawField(RectangleButton& colorSwitcher, RectangleButton& moveToGam
 
 // <Game functions>
 void enableGame(RectangleButton& gridSwitcher, RectangleButton& minusSpeedButton, RectangleButton& plusSpeedButton,
-                RectangleButton& newGameButton, RectangleButton& pauseButton)
-{
+                RectangleButton& newGameButton, RectangleButton& pauseButton) {
     gridSwitcher.interactable = true;
     minusSpeedButton.interactable = true;
     plusSpeedButton.interactable = true;
@@ -536,23 +249,16 @@ void enableGame(RectangleButton& gridSwitcher, RectangleButton& minusSpeedButton
     pauseButton.interactable = true;
 }
 
-void initializeGame(Canvas& tileSet, bool isRandom, std::chrono::steady_clock::time_point& timePoint)
-{
-    if (isRandom)
-    {
+void initializeGame(Canvas& tileSet, bool isRandom, std::chrono::steady_clock::time_point& timePoint) {
+    if (isRandom) {
         placeRandomCells(_lastMatrix);
         matrixToTileSet(tileSet, _lastMatrix);
-    }
-    else
-    {
+    } else {
         tileSetToMatrix(tileSet, _lastMatrix);
     }
     
     _exceptionBool = false;
-    if (_nextTurns.size() != 0)
-    {
-        clearQueue(_nextTurns);
-    }
+    if (_nextTurns.size() != 0) clearQueue(_nextTurns);
     _calculationHandle = std::async(calculateNextTurnsSecondThread);
     
     timePoint = std::chrono::steady_clock::now();
@@ -570,8 +276,7 @@ void displayGame(sf::RenderWindow& window, sf::RectangleShape& divisorRect,
                  sf::RectangleShape& aysBackground, ImprovedText& aysText,
                  RectangleButton&    aysYes,        ImprovedText& aysYesText,
                  RectangleButton&    aysNo,         ImprovedText& aysNoText,
-                 std::vector<sf::RectangleShape>& aysBackgroundBorders, bool aysMode)
-{
+                 std::vector<sf::RectangleShape>& aysBackgroundBorders, bool aysMode) {
     window.clear(sf::Color::Black);
     
     // <Standart display>
@@ -582,25 +287,17 @@ void displayGame(sf::RenderWindow& window, sf::RectangleShape& divisorRect,
     window.draw(amountOfTurnsRect);
     window.draw(gridSwitcher);
     window.draw(speedSwitchBackground);
-    window.draw(currentSpeedText);
     window.draw(minusSpeedButton);
     window.draw(plusSpeedButton);
     window.draw(newGameButton);
     window.draw(pauseButton);
     
-    for (int i = 0; i < grid.size(); i++)
-    {
-        window.draw(grid[i]);
-    }
+    for (int i = 0; i < grid.size(); i++) window.draw(grid[i]);
     // </Standart display>
     
-    if (aysMode)
-    {
+    if (aysMode) {
         window.draw(aysBackground);
-        for (int i = 0; i < 4; i++)
-        {
-            window.draw(aysBackgroundBorders[i]);
-        }
+        for (int i = 0; i < 4; i++) window.draw(aysBackgroundBorders[i]);
         window.draw(aysText);
         
         window.draw(aysYes);
@@ -608,11 +305,10 @@ void displayGame(sf::RenderWindow& window, sf::RectangleShape& divisorRect,
         
         window.draw(aysNo);
         window.draw(aysNoText);
-    }
-    else
-    {
+    } else {
         window.draw(amountOfTurnsText);
         window.draw(gridSwitcherText);
+        window.draw(currentSpeedText);
         window.draw(minusSpeedButtonText);
         window.draw(plusSpeedButtonText);
         window.draw(newGameButtonText);
@@ -625,16 +321,12 @@ void displayGame(sf::RenderWindow& window, sf::RectangleShape& divisorRect,
 void updateGame(sf::RenderWindow& window, AdvancedMouse& mouse,
                 RectangleButton& gridSwitcher, RectangleButton& minusSpeedButton, RectangleButton& plusSpeedButton,
                 RectangleButton& newGameButton, RectangleButton& pauseButton,
-                RectangleButton& aysYes, RectangleButton& aysNo, bool aysMode)
-{
+                RectangleButton& aysYes, RectangleButton& aysNo, bool aysMode) {
     mouse.updateCondition(window);
-    if (aysMode)
-    {
+    if (aysMode) {
         aysYes.updateButtonCondition(mouse, window);
         aysNo.updateButtonCondition(mouse, window);
-    }
-    else
-    {
+    } else {
         gridSwitcher.updateButtonCondition(mouse, window);
         minusSpeedButton.updateButtonCondition(mouse, window);
         plusSpeedButton.updateButtonCondition(mouse, window);
@@ -647,23 +339,15 @@ void disableGame(unsigned int& amountOfTurns,
                  std::vector<sf::RectangleShape>& grid, Canvas& tileSet,
                  RectangleButton& gridSwitcher, RectangleButton& minusSpeedButton, RectangleButton& plusSpeedButton,
                  RectangleButton& newGameButton, RectangleButton& pauseButton,
-                 ImprovedText& amountOfTurnsText, ImprovedText& gridSwitcherText, ImprovedText& pauseButtonText)
-{
+                 ImprovedText& amountOfTurnsText, ImprovedText& gridSwitcherText, ImprovedText& pauseButtonText) {
     amountOfTurns = 0;
     
-    for (int i = 0; i < grid.size(); i++)
-    {
-        grid[i].setFillColor(sf::Color::Black);
-    }
+    for (int i = 0; i < grid.size(); i++) grid[i].setFillColor(sf::Color::Black);
     
     tileSet.isActive = false;
     for (int i = 0; i < _fieldWidth; i++)
-    {
         for (int j = 0; j < _fieldHeight; j++)
-        {
             tileSet.drawingCanvas[i][j].setFillColor(sf::Color::Black);
-        }
-    }
     
     gridSwitcher.interactable = false;
     minusSpeedButton.interactable = false;
@@ -683,8 +367,7 @@ void darkenGame(sf::RectangleShape& divisorRect,
                 sf::RectangleShape& amountOfTurnsRect, sf::RectangleShape& speedSwitchBackground,
                 RectangleButton& gridSwitcher,  RectangleButton& minusSpeedButton, RectangleButton& plusSpeedButton,
                 RectangleButton& newGameButton, RectangleButton& pauseButton,
-                sf::Color& darkGrid, sf::Color& darkTileSet)
-{
+                sf::Color& darkGrid, sf::Color& darkTileSet) {
     divisorRect.setFillColor(sf::Color(128, 128, 128, 255));
     
     amountOfTurnsRect.setFillColor(sf::Color(128, 128, 128, 255));
@@ -696,23 +379,13 @@ void darkenGame(sf::RectangleShape& divisorRect,
     pauseButton.setFillColor(sf::Color(128, 128, 128, 255));
     
     if (grid[0].getFillColor() == sf::Color::Red)
-    {
         for (int i = 0; i < grid.size(); i++)
-        {
             grid[i].setFillColor(darkGrid);
-        }
-    }
     
     for (int i = 0; i < _fieldWidth; i++)
-    {
         for (int j = 0; j < _fieldHeight; j++)
-        {
             if (tileSet.drawingCanvas[i][j].getFillColor() == sf::Color::White)
-            {
                 tileSet.drawingCanvas[i][j].setFillColor(darkTileSet);
-            }
-        }
-    }
 }
 
 void lightenGame(sf::RectangleShape& divisorRect,
@@ -720,8 +393,7 @@ void lightenGame(sf::RectangleShape& divisorRect,
                  sf::RectangleShape& amountOfTurnsRect, sf::RectangleShape& speedSwitchBackground,
                  RectangleButton& gridSwitcher,  RectangleButton& minusSpeedButton, RectangleButton& plusSpeedButton,
                  RectangleButton& newGameButton, RectangleButton& pauseButton,
-                 sf::Color& darkGrid, sf::Color& darkTileSet)
-{
+                 sf::Color& darkGrid, sf::Color& darkTileSet) {
     divisorRect.setFillColor(sf::Color::White);
     
     amountOfTurnsRect.setFillColor(sf::Color::White);
@@ -733,37 +405,23 @@ void lightenGame(sf::RectangleShape& divisorRect,
     pauseButton.setFillColor(sf::Color::White);
     
     if (grid[0].getFillColor() == darkGrid)
-    {
         for (int i = 0; i < grid.size(); i++)
-        {
             grid[i].setFillColor(sf::Color::Red);
-        }
-    }
     
     for (int i = 0; i < _fieldWidth; i++)
-    {
         for (int j = 0; j < _fieldHeight; j++)
-        {
             if (tileSet.drawingCanvas[i][j].getFillColor() == darkTileSet)
-            {
                 tileSet.drawingCanvas[i][j].setFillColor(sf::Color::White);
-            }
-        }
-    }
 }
 
 // </Game functions>
 
-int main(int, char const**)
-{
+int main(int, char const**) {
     // <MainInitialization>
     sf::RenderWindow mainWindow(sf::VideoMode(1280, 720), "Conway's Game of Life", sf::Style::Titlebar | sf::Style::Close);
     
     sf::Image icon;
-    if (!icon.loadFromFile(resourcePath() + "icon.png"))
-    {
-        std::cout << "hell no" << std::endl;
-    }
+    if (!icon.loadFromFile(resourcePath() + "icon.png")) std::cout << "hell no" << std::endl;
     mainWindow.setIcon(icon.getSize().x, icon.getSize().y, icon.getPixelsPtr());
     
     windowStart(mainWindow);
@@ -771,27 +429,18 @@ int main(int, char const**)
     AdvancedMouse mouse;
     
     sf::Font font;
-    if (!font.loadFromFile(resourcePath() + "SanFrancisco.ttf"))
-    {
-        std::cout << "hell no" << std::endl;
-    }
-    
+    if (!font.loadFromFile(resourcePath() + "SanFrancisco.ttf")) std::cout << "hell no" << std::endl;
     // </MainInitialization>
     
     // <DrawChoiceInitialization>
     RectangleButton randomFieldFill(sf::Vector2f(320.f, 150.f), sf::Vector2f(640.f, 150.f), sf::Color::White);
     randomFieldFill.buttonType = ButtonType::ClickOnRelease;
-    
     ImprovedText randomFieldFillText("Use random field", font, 80, sf::Color::Black, randomFieldFill.getGlobalBounds());
     
-
     RectangleButton drawField(sf::Vector2f(320.f, 420.f), sf::Vector2f(640.f, 150.f), sf::Color::White);
     drawField.buttonType = ButtonType::ClickOnRelease;
-    
     ImprovedText drawFieldText("Draw field", font, 80, sf::Color::Black, drawField.getGlobalBounds());
     // </DrawChoiceInitialization>
-    
-    
     
     // <DrawFieldInitialization>
     sf::RectangleShape divisorRect;
@@ -799,26 +448,20 @@ int main(int, char const**)
     divisorRect.setSize(sf::Vector2f(5.f, 720.f));
     divisorRect.setFillColor(sf::Color::White);
     
-
     RectangleButton colorSwitcher(sf::Vector2f(50.f, 50.f), sf::Vector2f(174.f, 75.f), sf::Color::White);
     colorSwitcher.buttonType = ButtonType::ClickOnRelease;
-    
     ImprovedText colorSwitcherText("White", font, 50, sf::Color::Black, colorSwitcher.getGlobalBounds());
     
-
     RectangleButton gridSwitcher(sf::Vector2f(50.f, 175.f), sf::Vector2f(174.f, 75.f), sf::Color::White);
     gridSwitcher.buttonType = ButtonType::ClickOnRelease;
-    
     ImprovedText gridSwitcherText("Grid: OFF", font, 40, sf::Color::Black, gridSwitcher.getGlobalBounds());
-    
     
     _fieldWidth--;
     _fieldHeight--;
     std::vector<sf::RectangleShape> grid(_fieldWidth + _fieldHeight + 4);
     float posX = 298.f, posY = 0.f;
     int gridPlaceCounter = 0;
-    for ( ; gridPlaceCounter < _fieldWidth; gridPlaceCounter++)
-    {
+    for ( ; gridPlaceCounter < _fieldWidth; gridPlaceCounter++) {
         grid[gridPlaceCounter].setPosition(sf::Vector2f(posX, posY));
         grid[gridPlaceCounter].setSize(sf::Vector2f(2.f, 720.f));
         grid[gridPlaceCounter].setFillColor(sf::Color::Black);
@@ -826,13 +469,13 @@ int main(int, char const**)
     }
     posX = 279.f;
     posY = 19.f;
-    for ( ; gridPlaceCounter < (grid.size() - 4); gridPlaceCounter++)
-    {
+    for ( ; gridPlaceCounter < (grid.size() - 4); gridPlaceCounter++) {
         grid[gridPlaceCounter].setPosition(sf::Vector2f(posX, posY));
         grid[gridPlaceCounter].setSize(sf::Vector2f(1000.f, 2.f));
         grid[gridPlaceCounter].setFillColor(sf::Color::Black);
         posY += 20.f;
     }
+    
     grid[grid.size() - 4].setPosition(sf::Vector2f(279.f, 0.f));
     grid[grid.size() - 4].setSize(sf::Vector2f(1000.f, 1.f));
     grid[grid.size() - 4].setFillColor(sf::Color::Black);
@@ -848,6 +491,7 @@ int main(int, char const**)
     grid[grid.size() - 1].setPosition(sf::Vector2f(1278.f, 0.f));
     grid[grid.size() - 1].setSize(sf::Vector2f(1.f, 720.f));
     grid[grid.size() - 1].setFillColor(sf::Color::Black);
+    
     sf::Color darkGrid = sf::Color(128, 0, 0, 255);
     _fieldWidth++;
     _fieldHeight++;
@@ -860,31 +504,23 @@ int main(int, char const**)
     speedSwitchBackground.setPosition(sf::Vector2f(50.f, 300.f));
     speedSwitchBackground.setSize(sf::Vector2f(174.f, 60.f));
     speedSwitchBackground.setFillColor(sf::Color::White);
-    
     ImprovedText currentSpeedText("1/" + doubleToString(textTurnTimer) + "s", font, 30, sf::Color::Black, speedSwitchBackground.getGlobalBounds());
     
     RectangleButton minusSpeedButton(sf::Vector2f(50.f, 362.f), sf::Vector2f(86.f, 58.f), sf::Color::White);
     minusSpeedButton.buttonType = ButtonType::ClickWithHold;
-    
     ImprovedText minusSpeedButtonText("-", font, 40, sf::Color::Black, minusSpeedButton.getGlobalBounds());
     
     RectangleButton plusSpeedButton(sf::Vector2f(138.f, 362.f), sf::Vector2f(86.f, 58.f), sf::Color::White);
     plusSpeedButton.buttonType = ButtonType::ClickWithHold;
-    
     ImprovedText plusSpeedButtonText("+", font, 40, sf::Color::Black, plusSpeedButton.getGlobalBounds());
-    
     
     RectangleButton moveToGameStageButton(sf::Vector2f(50.f, 595.f), sf::Vector2f(174.f, 75.f), sf::Color::White);
     moveToGameStageButton.buttonType = ButtonType::ClickOnRelease;
-    
     ImprovedText moveToGameStageButtonText("Start", font, 50, sf::Color::Black, moveToGameStageButton.getGlobalBounds());
-    
     
     RectangleButton eraseAllButton(sf::Vector2f(50.f, 470.f), sf::Vector2f(174.f, 75.f), sf::Color::White);
     eraseAllButton.buttonType = ButtonType::ClickOnRelease;
-    
     ImprovedText eraseAllButtonText("Erase all", font, 40, sf::Color::Black, eraseAllButton.getGlobalBounds());
-    
     
     sf::Color drawColor = sf::Color::White;
 
@@ -904,13 +540,10 @@ int main(int, char const**)
     amountOfTurnsRect.setPosition(sf::Vector2f(50.f, 50.f));
     amountOfTurnsRect.setSize(sf::Vector2f(174.f, 75.f));
     amountOfTurnsRect.setFillColor(sf::Color::White);
-    
     ImprovedText amountOfTurnsText("0", font, 50, sf::Color::Black, amountOfTurnsRect.getGlobalBounds());
-    
     
     RectangleButton newGameButton(sf::Vector2f(50.f, 470.f), sf::Vector2f(174.f, 75.f), sf::Color::White);
     newGameButton.buttonType = ButtonType::ClickOnRelease;
-    
     ImprovedText newGameButtonText("New Game", font, 35, sf::Color::Black, newGameButton.getGlobalBounds());
     
     
@@ -966,47 +599,37 @@ int main(int, char const**)
     GameStage gameStage = GameStage::DrawChoice;
     enableDrawChoice(randomFieldFill, drawField);
     
-    while (mainWindow.isOpen())
-    {
-        switch (gameStage)
-        {
+    while (mainWindow.isOpen()) {
+        switch (gameStage) {
             case GameStage::DrawChoice:
                 displayDrawChoice(mainWindow, randomFieldFill, randomFieldFillText, drawField, drawFieldText);
                 updateDrawChoice(mainWindow, mouse, randomFieldFill, drawField);
                 
-                if (randomFieldFill.click)
-                {
+                if (randomFieldFill.click) {
                     disableDrawChoice(mainWindow, randomFieldFill, drawField);
                     initializeGame(tileSet, true, timePoint);
                     enableGame(gridSwitcher, minusSpeedButton, plusSpeedButton, newGameButton, pauseButton);
                     gameStage = GameStage::Game;
                 }
                 
-                if (drawField.click)
-                {
+                if (drawField.click) {
                     gameStage = GameStage::DrawField;
                     disableDrawChoice(mainWindow, randomFieldFill, drawField);
                     enableDrawField(colorSwitcher, gridSwitcher, minusSpeedButton, plusSpeedButton, eraseAllButton, moveToGameStageButton, tileSet);
                 }
                 
-                if (randomFieldFill.isPressed)
-                {
+                if (randomFieldFill.isPressed) {
                     randomFieldFill.setFillColor(sf::Color::Blue);
                     randomFieldFillText.setFillColor(sf::Color::White);
-                }
-                else
-                {
+                } else {
                     randomFieldFill.setFillColor(sf::Color::White);
                     randomFieldFillText.setFillColor(sf::Color::Black);
                 }
                 
-                if (drawField.isPressed)
-                {
+                if (drawField.isPressed) {
                     drawField.setFillColor(sf::Color::Blue);
                     drawFieldText.setFillColor(sf::Color::White);
-                }
-                else
-                {
+                } else {
                     drawField.setFillColor(sf::Color::White);
                     drawFieldText.setFillColor(sf::Color::Black);
                 }
@@ -1019,54 +642,36 @@ int main(int, char const**)
                                  grid, tileSet);
                 updateDrawField(mainWindow, mouse, colorSwitcher, gridSwitcher, minusSpeedButton, plusSpeedButton, eraseAllButton, moveToGameStageButton, tileSet);
                 
-                if (colorSwitcher.click)
-                {
-                    if (drawColor == sf::Color::White)
-                    {
+                if (colorSwitcher.click) {
+                    if (drawColor == sf::Color::White) {
                         drawColor = sf::Color::Black;
                         colorSwitcherText.setText("Black");
-                    }
-                    else
-                    {
+                    } else {
                         drawColor = sf::Color::White;
                         colorSwitcherText.setText("White");
                     }
                 }
 
-                if (gridSwitcher.click)
-                {
-                    if (grid[0].getFillColor() == sf::Color::Black)
-                    {
-                        for (int i = 0; i < grid.size(); i++)
-                        {
-                            grid[i].setFillColor(sf::Color::Red);
-                        }
+                if (gridSwitcher.click) {
+                    if (grid[0].getFillColor() == sf::Color::Black) {
+                        for (int i = 0; i < grid.size(); i++) grid[i].setFillColor(sf::Color::Red);
                         gridSwitcherText.setText("Grid: ON");
-                    }
-                    else
-                    {
-                        for (int i = 0; i < grid.size(); i++)
-                        {
-                            grid[i].setFillColor(sf::Color::Black);
-                        }
+                    } else {
+                        for (int i = 0; i < grid.size(); i++) grid[i].setFillColor(sf::Color::Black);
                         gridSwitcherText.setText("Grid: OFF");
                     }
                 }
                 
-                if (minusSpeedButton.click)
-                {
-                    if (nextTurnTimer < MAX_TIMER_VALUE)
-                    {
+                if (minusSpeedButton.click) {
+                    if (nextTurnTimer < MAX_TIMER_VALUE) {
                         nextTurnTimer += 10;
                         textTurnTimer = nextTurnTimer / 1000.0;
                         currentSpeedText.setText("1/" + doubleToString(textTurnTimer) + "s");
                     }
                 }
                 
-                if (plusSpeedButton.click)
-                {
-                    if (nextTurnTimer > MIN_TIMER_VALUE)
-                    {
+                if (plusSpeedButton.click) {
+                    if (nextTurnTimer > MIN_TIMER_VALUE) {
                         nextTurnTimer -= 10;
                         textTurnTimer = nextTurnTimer / 1000.0;
                         currentSpeedText.setText("1/" + doubleToString(textTurnTimer) + "s");
@@ -1074,18 +679,11 @@ int main(int, char const**)
                 }
                 
                 if (eraseAllButton.click)
-                {
                     for (int i = 0; i < _fieldWidth; i++)
-                    {
                         for (int j = 0; j < _fieldHeight; j++)
-                        {
                             tileSet.drawingCanvas[i][j].setFillColor(sf::Color::Black);
-                        }
-                    }
-                }
                 
-                if (moveToGameStageButton.click)
-                {
+                if (moveToGameStageButton.click) {
                     disableDrawField(colorSwitcher, moveToGameStageButton, tileSet, colorSwitcherText, drawColor);
                     initializeGame(tileSet, false, timePoint);
                     enableGame(gridSwitcher, minusSpeedButton, plusSpeedButton, newGameButton, pauseButton);
@@ -1093,72 +691,52 @@ int main(int, char const**)
                 }
                 
                 for (std::pair<int, int> p : tileSet.changedUnits)
-                {
                     tileSet.drawingCanvas[p.first][p.second].setFillColor(drawColor);
-                }
 
-                if (colorSwitcher.isPressed)
-                {
+                if (colorSwitcher.isPressed) {
                     colorSwitcher.setFillColor(sf::Color::Blue);
                     colorSwitcherText.setFillColor(sf::Color::White);
-                }
-                else
-                {
+                } else {
                     colorSwitcher.setFillColor(sf::Color::White);
                     colorSwitcherText.setFillColor(sf::Color::Black);
                 }
 
-                if (gridSwitcher.isPressed)
-                {
+                if (gridSwitcher.isPressed) {
                     gridSwitcher.setFillColor(sf::Color::Blue);
                     gridSwitcherText.setFillColor(sf::Color::White);
-                }
-                else
-                {
+                } else {
                     gridSwitcher.setFillColor(sf::Color::White);
                     gridSwitcherText.setFillColor(sf::Color::Black);
                 }
                 
-                if (minusSpeedButton.isPressed)
-                {
+                if (minusSpeedButton.isPressed) {
                     minusSpeedButton.setFillColor(sf::Color::Blue);
                     minusSpeedButtonText.setFillColor(sf::Color::White);
-                }
-                else
-                {
+                } else {
                     minusSpeedButton.setFillColor(sf::Color::White);
                     minusSpeedButtonText.setFillColor(sf::Color::Black);
                 }
                 
-                if (plusSpeedButton.isPressed)
-                {
+                if (plusSpeedButton.isPressed) {
                     plusSpeedButton.setFillColor(sf::Color::Blue);
                     plusSpeedButtonText.setFillColor(sf::Color::White);
-                }
-                else
-                {
+                } else {
                     plusSpeedButton.setFillColor(sf::Color::White);
                     plusSpeedButtonText.setFillColor(sf::Color::Black);
                 }
                 
-                if (eraseAllButton.isPressed)
-                {
+                if (eraseAllButton.isPressed) {
                     eraseAllButton.setFillColor(sf::Color::Blue);
                     eraseAllButtonText.setFillColor(sf::Color::White);
-                }
-                else
-                {
+                } else {
                     eraseAllButton.setFillColor(sf::Color::White);
                     eraseAllButtonText.setFillColor(sf::Color::Black);
                 }
                 
-                if (moveToGameStageButton.isPressed)
-                {
+                if (moveToGameStageButton.isPressed) {
                     moveToGameStageButton.setFillColor(sf::Color::Blue);
                     moveToGameStageButtonText.setFillColor(sf::Color::White);
-                }
-                else
-                {
+                } else {
                     moveToGameStageButton.setFillColor(sf::Color::White);
                     moveToGameStageButtonText.setFillColor(sf::Color::Black);
                 }
@@ -1172,69 +750,43 @@ int main(int, char const**)
                             aysBackground, aysText, aysYes, aysYesText, aysNo, aysNoText, aysBackgroundBorders, aysMode);
                 updateGame(mainWindow, mouse, gridSwitcher, minusSpeedButton, plusSpeedButton, newGameButton, pauseButton, aysYes, aysNo, aysMode);
                 
-                if (gameIsPaused)
-                {
+                if (gameIsPaused) {
                     timePoint = std::chrono::steady_clock::now() - std::chrono::milliseconds(timer);
-                }
-                else
-                {
-                    if (std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - timePoint).count() > nextTurnTimer)
-                    {
+                } else {
+                    if (std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - timePoint).count() > nextTurnTimer) {
                         timePoint = std::chrono::steady_clock::now();
                         setNextTurn(tileSet, amountOfTurns, amountOfTurnsText);
                     }
                 }
                 
-                if (gridSwitcher.click)
-                {
-                    if (grid[0].getFillColor() == sf::Color::Black)
-                    {
-                        for (int i = 0; i < grid.size(); i++)
-                        {
-                            grid[i].setFillColor(sf::Color::Red);
-                        }
+                if (gridSwitcher.click) {
+                    if (grid[0].getFillColor() == sf::Color::Black) {
+                        for (int i = 0; i < grid.size(); i++) grid[i].setFillColor(sf::Color::Red);
                         gridSwitcherText.setText("Grid: ON");
-                    }
-                    else
-                    {
-                        for (int i = 0; i < grid.size(); i++)
-                        {
-                            grid[i].setFillColor(sf::Color::Black);
-                        }
+                    } else {
+                        for (int i = 0; i < grid.size(); i++) grid[i].setFillColor(sf::Color::Black);
                         gridSwitcherText.setText("Grid: OFF");
                     }
                 }
                 
-                if (minusSpeedButton.click)
-                {
-                    if (nextTurnTimer < MAX_TIMER_VALUE)
-                    {
+                if (minusSpeedButton.click) {
+                    if (nextTurnTimer < MAX_TIMER_VALUE) {
                         nextTurnTimer += 10;
                         textTurnTimer = nextTurnTimer / 1000.0;
                         currentSpeedText.setText("1/" + doubleToString(textTurnTimer) + "s");
                     }
                 }
                 
-                if (plusSpeedButton.click)
-                {
-                    if (nextTurnTimer > MIN_TIMER_VALUE)
-                    {
+                if (plusSpeedButton.click) {
+                    if (nextTurnTimer > MIN_TIMER_VALUE) {
                         nextTurnTimer -= 10;
                         textTurnTimer = nextTurnTimer / 1000.0;
                         currentSpeedText.setText("1/" + doubleToString(textTurnTimer) + "s");
                     }
                 }
                 
-                if (newGameButton.click)
-                {
-                    if (gameIsPaused)
-                    {
-                        gameWasPaused = true;
-                    }
-                    else
-                    {
-                        gameWasPaused = false;
-                    }
+                if (newGameButton.click) {
+                    gameWasPaused = gameIsPaused;
                     gameIsPaused = true;
                     timer = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - timePoint).count();
                     
@@ -1251,22 +803,17 @@ int main(int, char const**)
                     newGameButton.click = false;
                 }
                 
-                if (pauseButton.click)
-                {
+                if (pauseButton.click) {
                     gameIsPaused = !gameIsPaused;
-                    if (gameIsPaused)
-                    {
+                    if (gameIsPaused) {
                         pauseButtonText.setText("Play");
                         timer = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - timePoint).count();
-                    }
-                    else
-                    {
+                    } else {
                         pauseButtonText.setText("Pause");
                     }
                 }
                 
-                if (aysYes.click)
-                {
+                if (aysYes.click) {
                     lightenGame(divisorRect, tileSet, grid, amountOfTurnsRect, speedSwitchBackground,
                                 gridSwitcher, minusSpeedButton, plusSpeedButton, newGameButton, pauseButton, darkGrid, darkTileSet);
                     disableGame(amountOfTurns, grid, tileSet, gridSwitcher, minusSpeedButton, plusSpeedButton,
@@ -1288,19 +835,11 @@ int main(int, char const**)
                     aysYes.isPressed = false;
                 }
                 
-                if (aysNo.click)
-                {
+                if (aysNo.click) {
                     lightenGame(divisorRect, tileSet, grid, amountOfTurnsRect, speedSwitchBackground,
                                 gridSwitcher, minusSpeedButton, plusSpeedButton, newGameButton, pauseButton, darkGrid, darkTileSet);
                     aysMode = false;
-                    if (gameWasPaused)
-                    {
-                        gameIsPaused = true;
-                    }
-                    else
-                    {
-                        gameIsPaused = false;
-                    }
+                    gameIsPaused = gameWasPaused;
                     
                     gridSwitcher.interactable = true;
                     newGameButton.interactable = true;
@@ -1314,104 +853,76 @@ int main(int, char const**)
                 }
                 
                 
-                if (aysMode)
-                {
-                    if (aysYes.isPressed)
-                    {
+                if (aysMode) {
+                    if (aysYes.isPressed) {
                         aysYes.setFillColor(sf::Color::Blue);
                         aysYesText.setFillColor(sf::Color::White);
-                    }
-                    else
-                    {
+                    } else {
                         aysYes.setFillColor(sf::Color::White);
                         aysYesText.setFillColor(sf::Color::Black);
                     }
                     
-                    if (aysNo.isPressed)
-                    {
+                    if (aysNo.isPressed) {
                         aysNo.setFillColor(sf::Color::Blue);
                         aysNoText.setFillColor(sf::Color::White);
-                    }
-                    else
-                    {
+                    } else {
                         aysNo.setFillColor(sf::Color::White);
                         aysNoText.setFillColor(sf::Color::Black);
                     }
-                }
-                else
-                {
-                    if (gridSwitcher.isPressed)
-                    {
+                } else {
+                    if (gridSwitcher.isPressed) {
                         gridSwitcher.setFillColor(sf::Color::Blue);
                         gridSwitcherText.setFillColor(sf::Color::White);
-                    }
-                    else
-                    {
+                    } else {
                         gridSwitcher.setFillColor(sf::Color::White);
                         gridSwitcherText.setFillColor(sf::Color::Black);
                     }
                     
-                    if (minusSpeedButton.isPressed)
-                    {
+                    if (minusSpeedButton.isPressed) {
                         minusSpeedButton.setFillColor(sf::Color::Blue);
                         minusSpeedButtonText.setFillColor(sf::Color::White);
-                    }
-                    else
-                    {
+                    } else {
                         minusSpeedButton.setFillColor(sf::Color::White);
                         minusSpeedButtonText.setFillColor(sf::Color::Black);
                     }
                     
-                    if (plusSpeedButton.isPressed)
-                    {
+                    if (plusSpeedButton.isPressed) {
                         plusSpeedButton.setFillColor(sf::Color::Blue);
                         plusSpeedButtonText.setFillColor(sf::Color::White);
-                    }
-                    else
-                    {
+                    } else {
                         plusSpeedButton.setFillColor(sf::Color::White);
                         plusSpeedButtonText.setFillColor(sf::Color::Black);
                     }
                     
-                    if (newGameButton.isPressed)
-                    {
+                    if (newGameButton.isPressed) {
                         newGameButton.setFillColor(sf::Color::Blue);
                         newGameButtonText.setFillColor(sf::Color::White);
-                    }
-                    else
-                    {
+                    } else {
                         newGameButton.setFillColor(sf::Color::White);
                         newGameButtonText.setFillColor(sf::Color::Black);
                     }
                     
-                    if (pauseButton.isPressed)
-                    {
+                    if (pauseButton.isPressed) {
                         pauseButton.setFillColor(sf::Color::Blue);
                         pauseButtonText.setFillColor(sf::Color::White);
-                    }
-                    else
-                    {
+                    } else {
                         pauseButton.setFillColor(sf::Color::White);
                         pauseButtonText.setFillColor(sf::Color::Black);
                     }
                 }
-                
                 break; // Game
         }
         
         sf::Event event;
-        while (mainWindow.pollEvent(event))
-        {
-            switch(event.type)
-            {
+        while (mainWindow.pollEvent(event)) {
+            switch(event.type) {
                 case sf::Event::Closed:
                     _exceptionBool = true;
                     mainWindow.close();
                     break;
                     
                 case sf::Event::LostFocus:
-                    switch(gameStage)
-                    {
+                    switch(gameStage) {
                         case GameStage::DrawChoice:
                             randomFieldFill.interactable = false;
                             drawField.interactable = false;
@@ -1421,22 +932,15 @@ int main(int, char const**)
                             colorSwitcher.interactable = false;
                             gridSwitcher.interactable = false;
                             for (int i = 0; i < _fieldWidth; i++)
-                            {
                                 for (int j = 0; j < _fieldHeight; j++)
-                                {
                                     tileSet.isActive = false;
-                                }
-                            }
                             break; // DrawField
                             
                         case GameStage::Game:
-                            if (aysMode)
-                            {
+                            if (aysMode) {
                                 aysYes.interactable = false;
                                 aysNo.interactable = false;
-                            }
-                            else
-                            {
+                            } else {
                                 gridSwitcher.interactable = false;
                                 newGameButton.interactable = false;
                                 pauseButton.interactable = false;
@@ -1446,8 +950,7 @@ int main(int, char const**)
                     break;
                     
                 case sf::Event::GainedFocus:
-                    switch(gameStage)
-                    {
+                    switch(gameStage) {
                         case GameStage::DrawChoice:
                             randomFieldFill.interactable = true;
                             drawField.interactable = true;
@@ -1457,22 +960,15 @@ int main(int, char const**)
                             colorSwitcher.interactable = true;
                             gridSwitcher.interactable = true;
                             for (int i = 0; i < _fieldWidth; i++)
-                            {
                                 for (int j = 0; j < _fieldHeight; j++)
-                                {
                                     tileSet.isActive = true;
-                                }
-                            }
                             break; // DrawField
                             
                         case GameStage::Game:
-                            if (aysMode)
-                            {
+                            if (aysMode) {
                                 aysYes.interactable = true;
                                 aysNo.interactable = true;
-                            }
-                            else
-                            {
+                            } else {
                                 gridSwitcher.interactable = true;
                                 newGameButton.interactable = true;
                                 pauseButton.interactable = true;
