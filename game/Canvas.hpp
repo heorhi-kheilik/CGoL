@@ -25,7 +25,7 @@ public:
     Canvas(int left, int top, int width, int height, int uW, int uH, AdvancedMouse& ms, sf::RenderWindow& window);
     
     void updateCondition(AdvancedMouse& ms, sf::RenderWindow& window);
-    void draw(sf::RenderTarget& target, sf::RenderStates states) const;
+    virtual void draw(sf::RenderTarget& target, const sf::RenderStates& states) const;
 };
 
 #endif /* Canvas_hpp */

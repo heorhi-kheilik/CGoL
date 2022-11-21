@@ -161,7 +161,7 @@ void Canvas::updateCondition(AdvancedMouse& ms, sf::RenderWindow& window) {
     previousPosition_ = currentPosition;
 }
 
-void Canvas::draw(sf::RenderTarget& target, sf::RenderStates states) const {
+void Canvas::draw(sf::RenderTarget& target, const sf::RenderStates& states) const {
     for (int i = 0; i < horizontalAmount_; i++)
         for (int j = 0; j < verticalAmount_; j++)
             target.draw(drawingCanvas[i][j]);

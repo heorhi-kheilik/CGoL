@@ -418,11 +418,14 @@ void lightenGame(sf::RectangleShape& divisorRect,
 
 int main(int, char const**) {
     // <MainInitialization>
-    sf::RenderWindow mainWindow(sf::VideoMode(1280, 720), "Conway's Game of Life", sf::Style::Titlebar | sf::Style::Close);
+    sf::Vector2u modeSize(1280, 720);
+    sf::VideoMode videoMode(modeSize);
+    sf::RenderWindow mainWindow(videoMode, "Conway's Game of Life", sf::Style::Titlebar | sf::Style::Close);
     
     sf::Image icon;
     if (!icon.loadFromFile(resourcePath() + "icon.png")) std::cout << "hell no" << std::endl;
-    mainWindow.setIcon(icon.getSize().x, icon.getSize().y, icon.getPixelsPtr());
+    sf::Vector2u iconSize(icon.getSize().x, icon.getSize().y);
+    mainWindow.setIcon(iconSize, icon.getPixelsPtr());
     
     windowStart(mainWindow);
     
@@ -563,7 +566,8 @@ int main(int, char const**) {
     aysBackground.setSize(sf::Vector2f(640.f, 440.f));
     aysBackground.setFillColor(sf::Color::Black);
     
-    ImprovedText aysText("Are you sure?", font, 90, sf::Color::White, sf::Rect<float>(320.f, 140.f, 640.f, 220.f));
+    sf::Vector2<float> aysPosition(320.f, 140.f), aysSize(640.f, 220.f);
+    ImprovedText aysText("Are you sure?", font, 90, sf::Color::White, sf::Rect<float>(aysPosition, aysSize));
     
     std::vector<sf::RectangleShape> aysBackgroundBorders(4);
     
